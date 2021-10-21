@@ -1,6 +1,7 @@
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,8 @@ class UserDetails extends StatefulWidget {
 class _UserDetailsState extends State<UserDetails> {
   bool detailsLoading;
   String name, phone, email, age, gender;
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
 
   @override
   void initState() {
@@ -26,7 +29,7 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   populateDetails() async {
-    String uid = await PersistenceHandler.getter('uid');
+    String uid = await _localStorageService.getter('uid');
     var response =
         await Networking.getData('user/get-user-details', {"userId": uid});
     if (response['success'] && response['data'].length != 0) {

@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/rich_text_row.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -25,6 +26,9 @@ class _BodyState extends State<Body> {
       loadingMore = false;
   List bookingDetails = [], moreBookingDetails = [];
 
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
+
   @override
   void initState() {
     offset = 0;
@@ -34,7 +38,7 @@ class _BodyState extends State<Body> {
   }
 
   getBookingData() async {
-    String uid = await PersistenceHandler.getter('uid');
+    String uid = await _localStorageService.getter('uid');
     try {
       var response = await Networking.getData('bookings/get-user-bookings', {
         "userId": uid,

@@ -1,4 +1,5 @@
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/screens/club_UI_screens/details/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,9 +19,11 @@ class OwnClubCard extends StatefulWidget {
 }
 
 class _OwnClubCardState extends State<OwnClubCard> {
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
   @override
   void initState() {
-    PersistenceHandler.setter(
+    _localStorageService.setter(
         "clubId ${widget.club['clubId']}", widget.club['clubId'].toString());
     super.initState();
   }

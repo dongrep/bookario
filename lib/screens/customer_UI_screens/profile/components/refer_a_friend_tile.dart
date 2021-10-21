@@ -1,4 +1,5 @@
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +13,12 @@ class ReferAFriendTile extends StatefulWidget {
 
 class _ReferAFriendTileState extends State<ReferAFriendTile> {
   Future<bool> _generateReferralCode(BuildContext context) async {
-    String referralCode = await PersistenceHandler.getter("referralCode");
+    final LocalStorageService _localStorageService =
+        locator<LocalStorageService>();
+    String referralCode = await _localStorageService.getter("referralCode");
     if (referralCode == null) {
       referralCode = randomAlphaNumeric(20);
-      PersistenceHandler.setter("referralCode", referralCode);
+      _localStorageService.setter("referralCode", referralCode);
     }
     return showDialog(
       context: context,

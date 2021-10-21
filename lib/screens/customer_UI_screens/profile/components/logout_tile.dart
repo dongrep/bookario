@@ -1,4 +1,5 @@
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/screens/sign_in/sign_in_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class LogoutTile extends StatefulWidget {
 class _LogoutTileState extends State<LogoutTile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User user;
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
 
   checkAuthentification() async {
     _auth.authStateChanges().listen((user) {
@@ -68,7 +71,7 @@ class _LogoutTileState extends State<LogoutTile> {
             ),
             MaterialButton(
               onPressed: () async {
-                PersistenceHandler.deleteStore('userType');
+                _localStorageService.deleteStore('userType');
                 await FirebaseAuth.instance.signOut();
               },
               child: Text(

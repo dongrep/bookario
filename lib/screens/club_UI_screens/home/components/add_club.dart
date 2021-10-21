@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/default_button.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ class _AddNewClubState extends State<AddNewClub> {
   String _clubName, _location, _description, _address;
   int offset, limit;
   List<dynamic> clubData;
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
 
   FocusNode clubNameFocusNode = FocusNode();
   FocusNode locationFocusNode = FocusNode();
@@ -215,7 +218,7 @@ class _AddNewClubState extends State<AddNewClub> {
   }
 
   void addClub(String imageUrl) async {
-    String uid = await PersistenceHandler.getter('uid');
+    String uid = await _localStorageService.getter('uid');
     try {
       var response = await Networking.post('clubs/add-club', {
         'name': _clubName.trim(),

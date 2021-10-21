@@ -1,7 +1,8 @@
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/custom_surfix_icon.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +26,11 @@ class _EditProfileState extends State<EditProfile> {
   final ageEditingController = TextEditingController();
   final phoneNumberEditingController = TextEditingController();
 
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
+
   getDetails() async {
-    String uid = await PersistenceHandler.getter('uid');
+    String uid = await _localStorageService.getter('uid');
     var response =
         await Networking.getData('user/get-user-details', {"userId": uid});
     return response;
@@ -160,7 +164,7 @@ class _EditProfileState extends State<EditProfile> {
                               try {
                                 print(phoneNumberEditingController.text);
                                 String uid =
-                                    await PersistenceHandler.getter('uid');
+                                    await _localStorageService.getter('uid');
                                 var response =
                                     await Networking.post('user/update-user', {
                                   'userId': uid,

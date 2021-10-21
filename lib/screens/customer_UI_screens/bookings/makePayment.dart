@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/bottom_navbar.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/screens/club_UI_screens/home/club_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -27,6 +28,8 @@ class MakePayment extends StatefulWidget {
 class _MakePaymentState extends State<MakePayment> {
   Razorpay razorpay;
   String uid, date;
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
 
   @override
   void initState() {
@@ -63,7 +66,7 @@ class _MakePaymentState extends State<MakePayment> {
   }
 
   void getUid() async {
-    String userId = await PersistenceHandler.getter('uid');
+    String userId = await _localStorageService.getter('uid');
     print('uid is: $userId');
     DateTime now = new DateTime.now();
     date = new DateTime(now.year, now.month, now.day).toString();

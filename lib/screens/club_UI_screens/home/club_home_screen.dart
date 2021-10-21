@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/screens/club_UI_screens/home/components/add_club.dart';
 import 'package:bookario/screens/club_UI_screens/home/components/own_clubs.dart';
 import 'package:bookario/screens/sign_in/sign_in_screen.dart';
@@ -29,6 +30,9 @@ class _ClubHomeScreenState extends State<ClubHomeScreen> {
   int offset, limit;
   List<dynamic> clubData;
 
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
+
   checkAuthentification() async {
     _auth.authStateChanges().listen((user) {
       if (user == null) {
@@ -53,7 +57,7 @@ class _ClubHomeScreenState extends State<ClubHomeScreen> {
   }
 
   getMyClubs() async {
-    String uid = await PersistenceHandler.getter('uid');
+    String uid = await _localStorageService.getter('uid');
     print("club " + uid);
     var response = await Networking.getData('clubs/get-user-club', {
       "userId": uid,
@@ -238,7 +242,7 @@ class _ClubHomeScreenState extends State<ClubHomeScreen> {
             ),
             MaterialButton(
               onPressed: () async {
-                PersistenceHandler.deleteStore('userType');
+                _localStorageService.deleteStore('userType');
                 await _auth.signOut();
               },
               child: Text(
