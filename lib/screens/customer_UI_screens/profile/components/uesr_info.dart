@@ -1,117 +1,86 @@
-import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/loading.dart';
-import 'package:bookario/components/networking.dart';
-import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:bookario/screens/customer_UI_screens/profile/profile_screen_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
 
-class UserDetails extends StatefulWidget {
-  @override
-  _UserDetailsState createState() => _UserDetailsState();
-}
-
-class _UserDetailsState extends State<UserDetails> {
-  bool detailsLoading;
-  String name, phone, email, age, gender;
-  final LocalStorageService _localStorageService =
-      locator<LocalStorageService>();
-
-  @override
-  void initState() {
-    super.initState();
-    name = '';
-    phone = '';
-    email = '';
-    age = '';
-    gender = '';
-    detailsLoading = true;
-    populateDetails();
-  }
-
-  populateDetails() async {
-    String uid = await _localStorageService.getter('uid');
-    var response =
-        await Networking.getData('user/get-user-details', {"userId": uid});
-    if (response['success'] && response['data'].length != 0) {
-      setState(() {
-        name = response['data'][0]['name'];
-        age = response['data'][0]['age'].toString();
-        phone = response['data'][0]['phone'];
-        email = response['data'][0]['email'];
-        gender = response['data'][0]['gender'];
-        detailsLoading = false;
-      });
-    }
-  }
+class UserDetails extends StatelessWidget {
+  final TextStyle textStyle =
+      const TextStyle(fontSize: 15, color: Colors.white);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      height: SizeConfig.screenHeight * 0.25,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Name",
-                style: TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-              Text(
-                "Phone no.",
-                style: TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-              Text(
-                "Email ID",
-                style: TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-              Text(
-                "Age",
-                style: TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-              Text(
-                "Gender",
-                style: TextStyle(fontSize: 15, color: Colors.white70),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          detailsLoading
-              ? Expanded(child: Loading())
-              : Column(
+    return ViewModelBuilder<ProfileScreenViewModel>.reactive(
+        onModelReady: (viewModel) => viewModel.populateDetails(),
+        viewModelBuilder: () => ProfileScreenViewModel(),
+        builder: (context, viewModel, child) {
+          return Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            height: SizeConfig.screenHeight * 0.25,
+            child: Row(
+              children: <Widget>[
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Text(
-                      ":  $name",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      "Name",
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
                     ),
                     Text(
-                      ":  $phone",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      "Phone no.",
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
                     ),
                     Text(
-                      ":  $email",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      "Email ID",
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
                     ),
                     Text(
-                      ":  $age yrs",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      "Age",
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
                     ),
                     Text(
-                      ":  $gender",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      "Gender",
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
                     ),
                   ],
                 ),
-        ],
-      ),
-    );
+                const SizedBox(
+                  width: 10,
+                ),
+                if (viewModel.isBusy)
+                  const Expanded(child: Loading())
+                else
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        ":  ${viewModel.user.name}",
+                        style: textStyle,
+                      ),
+                      Text(
+                        ":  ${viewModel.user.phone}",
+                        style: textStyle,
+                      ),
+                      Text(
+                        ":  ${viewModel.user.email}",
+                        style: textStyle,
+                      ),
+                      Text(
+                        ":  ${viewModel.user.age} yrs",
+                        style: textStyle,
+                      ),
+                      Text(
+                        ":  ${viewModel.user.gender}",
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          );
+        });
   }
 }

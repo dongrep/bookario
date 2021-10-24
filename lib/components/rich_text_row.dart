@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class RichTextRow extends StatelessWidget {
   const RichTextRow({
-    Key key,
-    @required this.textLeft,
-    @required this.textRight,
+    Key? key,
+    required this.textLeft,
+    required this.textRight,
   }) : super(key: key);
 
   final String textLeft, textRight;
@@ -17,7 +17,7 @@ class RichTextRow extends StatelessWidget {
       child: RichText(
         text: TextSpan(
           text: textLeft,
-          style: Theme.of(context).textTheme.bodyText1.copyWith(
+          style: Theme.of(context).textTheme.bodyText1!.copyWith(
                 fontSize: getProportionateScreenWidth(13),
                 fontWeight: FontWeight.bold,
                 color: Colors.black,

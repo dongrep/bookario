@@ -1,6 +1,6 @@
 import 'package:bookario/app.locator.dart';
-import 'package:bookario/services/local_storage_service.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:bookario/services/local_storage_service.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,24 +12,24 @@ class ReferAFriendTile extends StatefulWidget {
 }
 
 class _ReferAFriendTileState extends State<ReferAFriendTile> {
-  Future<bool> _generateReferralCode(BuildContext context) async {
+  Future _generateReferralCode(BuildContext context) async {
     final LocalStorageService _localStorageService =
         locator<LocalStorageService>();
-    String referralCode = await _localStorageService.getter("referralCode");
+    var referralCode = await _localStorageService.getter("referralCode");
     if (referralCode == null) {
       referralCode = randomAlphaNumeric(20);
-      _localStorageService.setter("referralCode", referralCode);
+      _localStorageService.setter("referralCode", referralCode.toString());
     }
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(5),
             ),
           ),
-          title: Text(
+          title: const Text(
             'Your Referral code:',
             style: TextStyle(
               fontSize: 17,
@@ -37,7 +37,7 @@ class _ReferAFriendTileState extends State<ReferAFriendTile> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text(
+          content: const Text(
             'Send your friend this referral code to get discount in your next booking',
             style: TextStyle(
               fontSize: 14,
@@ -48,19 +48,19 @@ class _ReferAFriendTileState extends State<ReferAFriendTile> {
             Container(
               width: SizeConfig.screenWidth,
               color: Colors.black12,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    referralCode,
-                    style: TextStyle(fontSize: 16),
+                    referralCode.toString(),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   Container(
                     padding: const EdgeInsets.only(right: 8),
                     child: InkWell(
                       onTap: () async {
-                        await FlutterClipboard.copy(referralCode);
+                        await FlutterClipboard.copy(referralCode.toString());
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(10),

@@ -5,7 +5,7 @@ import '../../../components/constants.dart';
 
 class TermsAndConditions extends StatelessWidget {
   const TermsAndConditions({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

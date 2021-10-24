@@ -1,122 +1,121 @@
-import 'package:bookario/app.locator.dart';
-import 'package:bookario/services/local_storage_service.dart';
-import 'package:bookario/screens/club_UI_screens/details/details_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:bookario/app.locator.dart';
+// import 'package:bookario/screens/club_UI_screens/details/details_screen.dart';
+// import 'package:bookario/services/local_storage_service.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../components/size_config.dart';
+// import '../../../../components/size_config.dart';
 
-class OwnClubCard extends StatefulWidget {
-  const OwnClubCard({
-    Key key,
-    @required this.club,
-  }) : super(key: key);
+// class OwnClubCard extends StatefulWidget {
+//   const OwnClubCard({
+//     Key? key,
+//     @required this.club,
+//   }) : super(key: key);
 
-  final club;
+//   final club;
 
-  @override
-  _OwnClubCardState createState() => _OwnClubCardState();
-}
+//   @override
+//   _OwnClubCardState createState() => _OwnClubCardState();
+// }
 
-class _OwnClubCardState extends State<OwnClubCard> {
-  final LocalStorageService _localStorageService =
-      locator<LocalStorageService>();
-  @override
-  void initState() {
-    _localStorageService.setter(
-        "clubId ${widget.club['clubId']}", widget.club['clubId'].toString());
-    super.initState();
-  }
+// class _OwnClubCardState extends State<OwnClubCard> {
+//   final LocalStorageService _localStorageService =
+//       locator<LocalStorageService>();
+//   @override
+//   void initState() {
+//     _localStorageService.setter(
+//         "clubId ${widget.club['clubId']}", widget.club['clubId'].toString());
+//     super.initState();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: SizeConfig.screenWidth,
-      height: SizeConfig.screenHeight * .35,
-      child: GestureDetector(
-        onTap: () => Navigator.pushNamed(
-          context,
-          OwnClubDetailsScreen.routeName,
-          arguments: ClubDetailsArguments(club: widget.club),
-        ),
-        child: Container(
-          margin: EdgeInsets.only(bottom: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: SizedBox(
-                    width: SizeConfig.screenWidth,
-                    child: Container(
-                      child: Hero(
-                        tag: widget.club['clubId'].toString(),
-                        child: Image.network(
-                          widget.club['image'],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 4, 12, 5),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: widget.club['name'],
-                            style:
-                                Theme.of(context).textTheme.headline6.copyWith(
-                                      fontSize: getProportionateScreenWidth(16),
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                            children: [
-                              TextSpan(
-                                text: '  (${widget.club['location']})',
-                                style: TextStyle(
-                                  fontSize: getProportionateScreenWidth(12),
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/icons/Location point.svg",
-                              height: getProportionateScreenWidth(13),
-                            ),
-                            const SizedBox(
-                              width: 3,
-                            ),
-                            Flexible(
-                              child: Container(
-                                child: Text(
-                                  widget.club['address'],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       width: SizeConfig.screenWidth,
+//       height: SizeConfig.screenHeight * .35,
+//       child: GestureDetector(
+//         onTap: () => Navigator.pushNamed(
+//           context,
+//           OwnClubDetailsScreen.routeName,
+//           arguments: ClubDetailsArguments(club: widget.club),
+//         ),
+//         child: Container(
+//           margin: EdgeInsets.only(bottom: 5),
+//           child: ClipRRect(
+//             borderRadius: BorderRadius.circular(5),
+//             child: Column(
+//               children: [
+//                 Expanded(
+//                   flex: 8,
+//                   child: SizedBox(
+//                     width: SizeConfig.screenWidth,
+//                     child: Container(
+//                       child: Hero(
+//                         tag: widget.club['clubId'].toString(),
+//                         child: Image.network(
+//                           widget.club['image'],
+//                           fit: BoxFit.cover,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 Expanded(
+//                   flex: 3,
+//                   child: Container(
+//                     padding: const EdgeInsets.fromLTRB(5, 4, 12, 5),
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         RichText(
+//                           text: TextSpan(
+//                             text: widget.club['name'],
+//                             style:
+//                                 Theme.of(context).textTheme.headline6.copyWith(
+//                                       fontSize: getProportionateScreenWidth(16),
+//                                       color: Colors.white,
+//                                       fontWeight: FontWeight.bold,
+//                                     ),
+//                             children: [
+//                               TextSpan(
+//                                 text: '  (${widget.club['location']})',
+//                                 style: TextStyle(
+//                                   fontSize: getProportionateScreenWidth(12),
+//                                   fontWeight: FontWeight.normal,
+//                                 ),
+//                               )
+//                             ],
+//                           ),
+//                         ),
+//                         Row(
+//                           children: [
+//                             SvgPicture.asset(
+//                               "assets/icons/Location point.svg",
+//                               height: getProportionateScreenWidth(13),
+//                             ),
+//                             const SizedBox(
+//                               width: 3,
+//                             ),
+//                             Flexible(
+//                               child: Container(
+//                                 child: Text(
+//                                   widget.club['address'],
+//                                   maxLines: 1,
+//                                   overflow: TextOverflow.ellipsis,
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

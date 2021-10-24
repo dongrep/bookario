@@ -4,9 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'size_config.dart';
 
 class Header extends StatelessWidget {
-  const Header({Key key, this.title}) : super(key: key);
+  const Header({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class Header extends StatelessWidget {
             ),
           ),
           Text(
-            title,
+            title.toString(),
             style: TextStyle(
                 fontSize: getProportionateScreenWidth(20),
                 color: Colors.black,

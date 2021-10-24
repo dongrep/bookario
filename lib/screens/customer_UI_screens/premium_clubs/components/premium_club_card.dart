@@ -5,7 +5,7 @@ import '../../../../components/size_config.dart';
 
 class PremiumEventCard extends StatelessWidget {
   const PremiumEventCard({
-    Key key,
+    Key? key,
     @required this.event,
   }) : super(key: key);
 
@@ -39,9 +39,9 @@ class PremiumEventCard extends StatelessWidget {
                     ),
                   ),
                   child: Hero(
-                    tag: event['eventId'],
+                    tag: event['eventId'].toString(),
                     child: Image.network(
-                      event['image'],
+                      event['image'].toString(),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -55,7 +55,6 @@ class PremiumEventCard extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(8, 2, 10, 5),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
                           Color(0xFF343434).withOpacity(0.8),
@@ -71,9 +70,9 @@ class PremiumEventCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           text: TextSpan(
-                            text: event['name'],
+                            text: event['name'].toString(),
                             style:
-                                Theme.of(context).textTheme.headline6.copyWith(
+                                Theme.of(context).textTheme.headline6!.copyWith(
                                       fontSize: getProportionateScreenWidth(16),
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,

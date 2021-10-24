@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class HoveringBackButton extends StatelessWidget {
   const HoveringBackButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

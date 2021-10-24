@@ -1,10 +1,13 @@
-import 'package:bookario/screens/sign_in/sign_in_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:bookario/screens/sign_in/sign_in_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:stacked_services/stacked_services.dart';
 
-import '../components/splash_content.dart';
 import '../../../components/default_button.dart';
+import '../components/splash_content.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -34,7 +37,7 @@ class _BodyState extends State<Body> {
         width: double.infinity,
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               height: getProportionateScreenWidth(80),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -61,8 +64,8 @@ class _BodyState extends State<Body> {
                 },
                 itemCount: splashData.length,
                 itemBuilder: (context, index) => SplashContent(
-                  text: splashData[index]['text'],
-                  image: splashData[index]["image"],
+                  text: splashData[index]['text']!,
+                  image: splashData[index]["image"]!,
                 ),
               ),
             ),
@@ -73,7 +76,7 @@ class _BodyState extends State<Body> {
                     horizontal: getProportionateScreenWidth(20)),
                 child: Column(
                   children: <Widget>[
-                    Spacer(),
+                    const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
@@ -81,14 +84,15 @@ class _BodyState extends State<Body> {
                         (index) => buildDot(index: index),
                       ),
                     ),
-                    Spacer(flex: 3),
+                    const Spacer(flex: 3),
                     DefaultButton(
                       text: "Continue",
                       press: () {
-                        Navigator.pushNamed(context, SignInScreen.routeName);
+                        locator<NavigationService>()
+                            .navigateTo(Routes.signInScreen);
                       },
                     ),
-                    Spacer(),
+                    const Spacer(),
                   ],
                 ),
               ),
@@ -99,10 +103,10 @@ class _BodyState extends State<Body> {
     );
   }
 
-  AnimatedContainer buildDot({int index}) {
+  AnimatedContainer buildDot({required int index}) {
     return AnimatedContainer(
       duration: kAnimationDuration,
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
       height: 6,
       width: currentPage == index ? 20 : 6,
       decoration: BoxDecoration(

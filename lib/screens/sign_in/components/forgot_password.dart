@@ -5,7 +5,7 @@ import '../../../components/constants.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

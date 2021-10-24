@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ContactTile extends StatefulWidget {
   const ContactTile({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

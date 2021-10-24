@@ -10,10 +10,9 @@ class BookingHistory extends StatelessWidget {
     SizeConfig().init(context);
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         title: Text("Booking History"),
       ),
-      body: Body(),
+      // body: Body(),
     );
   }
 }

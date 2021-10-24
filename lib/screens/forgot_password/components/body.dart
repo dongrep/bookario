@@ -1,13 +1,13 @@
+import 'package:bookario/components/change_onboarding_screen.dart';
+import 'package:bookario/components/custom_suffix_icon.dart';
+import 'package:bookario/components/default_button.dart';
 import 'package:bookario/components/dialogueBox.dart';
+import 'package:bookario/components/form_error.dart';
+import 'package:bookario/components/size_config.dart';
 import 'package:bookario/screens/sign_in/sign_in_screen.dart';
 import 'package:bookario/screens/sign_up/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:bookario/components/custom_surfix_icon.dart';
-import 'package:bookario/components/default_button.dart';
-import 'package:bookario/components/form_error.dart';
-import 'package:bookario/components/change_onboarding_screen.dart';
-import 'package:bookario/components/size_config.dart';
 
 import '../../../components/constants.dart';
 
@@ -31,8 +31,8 @@ class Body extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "Please enter your email and we will send you a link on your email to reset your password.",
                   textAlign: TextAlign.center,
@@ -56,18 +56,18 @@ class ForgotPassForm extends StatefulWidget {
 class _ForgotPassFormState extends State<ForgotPassForm> {
   final _formKey = GlobalKey<FormState>();
   List<String> errors = [];
-  String _email;
+  String? _email;
   bool loading = false;
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void forgotPassword() async {
     setState(() {
       loading = true;
     });
     try {
-      print(_email.trim());
-      await _auth.sendPasswordResetEmail(email: _email.trim());
+      print(_email!.trim());
+      await _auth.sendPasswordResetEmail(email: _email!.trim());
       setState(() {
         loading = false;
       });
@@ -81,21 +81,21 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
   }
 
   bool validateAndSave() {
-    final FormState form = _formKey.currentState;
-    if (form.validate()) {
+    final FormState? form = _formKey.currentState;
+    if (form!.validate()) {
       form.save();
       return true;
     }
     return false;
   }
 
-  Future<bool> resetEmailSent(BuildContext context) {
+  Future resetEmailSent(BuildContext context) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.grey[900],
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(5),
             ),
@@ -104,7 +104,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             "An email to reset your password is sent to your email ID.",
             style: Theme.of(context)
                 .textTheme
-                .headline6
+                .headline6!
                 .copyWith(fontSize: 17, color: Colors.white),
           ),
           actions: <Widget>[
@@ -118,14 +118,14 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
                   (Route<dynamic> route) => false,
                 );
               },
+              splashColor: Colors.red[50],
               child: Text(
                 "Ok",
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1
+                    .bodyText1!
                     .copyWith(color: kSecondaryColor),
               ),
-              splashColor: Colors.red[50],
             ),
           ],
         );
@@ -140,9 +140,9 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
       child: Column(
         children: [
           TextFormField(
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
             keyboardType: TextInputType.emailAddress,
-            onSaved: (newValue) => _email = newValue,
+            onSaved: (newValue) => _email = newValue!,
             cursorColor: Colors.white70,
             onChanged: (value) {
               if (value.isNotEmpty && errors.contains(kEmailNullError)) {
@@ -155,10 +155,11 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
                   errors.remove(kInvalidEmailError);
                 });
               }
-              return null;
+              return;
             },
             validator: (value) {
-              if (value.isEmpty && !errors.contains(kEmailNullError)) {
+              if (value == null ||
+                  value.isEmpty && !errors.contains(kEmailNullError)) {
                 setState(() {
                   errors.add(kEmailNullError);
                 });
@@ -170,11 +171,11 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
               }
               return null;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "Email",
               hintText: "Enter your email",
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+              prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
           ),
           SizedBox(height: getProportionateScreenHeight(30)),

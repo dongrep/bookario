@@ -1,388 +1,253 @@
-import 'package:bookario/components/bottom_navbar.dart';
-import 'package:bookario/components/dialogueBox.dart';
-import 'package:bookario/components/loading.dart';
-import 'package:bookario/components/networking.dart';
-import 'package:bookario/components/persistence_handler.dart';
-import 'package:bookario/screens/club_UI_screens/home/club_home_screen.dart';
-import 'package:bookario/screens/sign_up/components/bottom_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:bookario/components/custom_surfix_icon.dart';
+import 'package:bookario/components/constants.dart';
+import 'package:bookario/components/custom_suffix_icon.dart';
 import 'package:bookario/components/default_button.dart';
 import 'package:bookario/components/form_error.dart';
+import 'package:bookario/components/loading.dart';
+import 'package:bookario/components/size_config.dart';
+import 'package:bookario/screens/sign_up/components/bottom_text.dart';
+import 'package:bookario/screens/sign_up/sign_up_viewmodel.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:stacked/stacked.dart';
 
-import '../../../components/constants.dart';
-import '../../../components/size_config.dart';
-
-class SignUpForm extends StatefulWidget {
-  @override
-  _SignUpFormState createState() => _SignUpFormState();
-}
-
-class _SignUpFormState extends State<SignUpForm> {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  final _formKey = GlobalKey<FormState>();
-  String _customerName,
-      _email,
-      _phoneNumber,
-      _gender,
-      _password,
-      _confirmPassword,
-      _userType = 'customer',
-      _age;
-  int _radioValue = 0;
-  bool _obscureText = true, loading = false;
-  final List<String> errors = [];
-
-  FocusNode nameFocusNode = FocusNode();
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode phoneNumberFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-  FocusNode confirmPasswordFocusNode = FocusNode();
-  FocusNode ageFocusNode = FocusNode();
-  FocusNode genderFocusNode = FocusNode();
-
-  void addError({String error}) {
-    if (!errors.contains(error))
-      setState(() {
-        errors.add(error);
-      });
-  }
-
-  void removeError({String error}) {
-    if (errors.contains(error))
-      setState(() {
-        errors.remove(error);
-      });
-  }
-
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
-  bool validateAndSave() {
-    final FormState form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
+class SignUpForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: loading
-          ? Loading(text: "Please wait...\n Creating your account")
-          : Column(
-              children: [
-                buildNameFormField(),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                buildEmailFormField(),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                buildPhoneNumberFormField(),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                buildPasswordFormField(),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                buildConformPassFormField(),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                Row(
-                  children: [
-                    buildAgeFormField(),
-                    SizedBox(width: getProportionateScreenHeight(10)),
-                    buildGenderFormField()
-                  ],
-                ),
-                SizedBox(height: getProportionateScreenHeight(16)),
-                buildUserTypeRadioButtons(),
-                FormError(errors: errors),
-                SizedBox(height: getProportionateScreenHeight(30)),
-                DefaultButton(
-                  text: "Register",
-                  press: () async {
-                    if (validateAndSave()) {
-                      setState(() {
-                        loading = true;
-                        signUp();
-                      });
-                    }
-                  },
-                ),
-                SignupScreenBottomText()
-              ],
-            ),
+    return ViewModelBuilder<SignUpViewModel>.reactive(
+      viewModelBuilder: () => SignUpViewModel(),
+      builder: (BuildContext context, SignUpViewModel viewModel, child) => Form(
+        key: viewModel.formKey,
+        child: viewModel.isBusy
+            ? const Loading(text: "Please wait...\n Creating your account")
+            : Column(
+                children: [
+                  buildNameFormField(viewModel, context),
+                  SizedBox(
+                    height: getProportionateScreenHeight(16),
+                  ),
+                  buildEmailFormField(viewModel, context),
+                  SizedBox(
+                    height: getProportionateScreenHeight(16),
+                  ),
+                  buildPhoneNumberFormField(viewModel, context),
+                  SizedBox(
+                    height: getProportionateScreenHeight(16),
+                  ),
+                  buildPasswordFormField(viewModel, context),
+                  SizedBox(
+                    height: getProportionateScreenHeight(16),
+                  ),
+                  buildConformPassFormField(viewModel, context),
+                  SizedBox(
+                    height: getProportionateScreenHeight(16),
+                  ),
+                  Row(
+                    children: [
+                      buildAgeFormField(viewModel, context),
+                      SizedBox(
+                        width: getProportionateScreenHeight(10),
+                      ),
+                      buildGenderFormField(viewModel, context)
+                    ],
+                  ),
+                  // SizedBox(height: getProportionateScreenHeight(16)),
+                  // buildUserTypeRadioButtons(viewModel, context),
+                  FormError(errors: viewModel.errors),
+                  SizedBox(
+                    height: getProportionateScreenHeight(30),
+                  ),
+                  DefaultButton(
+                    text: "Register",
+                    press: () async {
+                      viewModel.validateAndSave();
+                    },
+                  ),
+                  const SignupScreenBottomText()
+                ],
+              ),
+      ),
     );
   }
 
-  void signUp() async {
-    try {
-      final databaseReference = FirebaseFirestore.instance;
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-              email: _email.trim(), password: _password.trim());
-      User user = userCredential.user;
-      if (user != null) {
-        user.sendEmailVerification().then((onValue) {
-          print("Verification mail sent on ${user.email}");
-        });
-        user.updateProfile(displayName: _customerName.trim());
-        if (_userType == 'customer') {
-          try {
-            // DocumentReference ref =
-            //     await databaseReference.collection("customers").add({
-            //   'name': _customerName.trim(),
-            //   'email': _email.trim(),
-            //   'phoneNumber': _phoneNumber.trim(),
-            //   'age': _age.trim(),
-            //   'gender': _gender,
-            //   'userType': _userType,
-            // });
-            await databaseReference.collection("customers").doc(user.uid).set({
-              'name': _customerName.trim(),
-              'email': _email.trim(),
-              'phoneNumber': _phoneNumber.trim(),
-              'age': _age.trim(),
-              'gender': _gender,
-              'userType': _userType,
-            });
-            var response = await Networking.post('user/add-new-user', {
-              'name': _customerName.trim(),
-              'email': _email.trim(),
-              'phone': _phoneNumber.trim(),
-              'age': _age.trim(),
-              'gender': _gender,
-              'userCategory': _userType,
-              'userId': user.uid,
-            });
-            print('${user.uid} updated to server: $response');
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BottomCustomNavBar(),
-                ),
-                (Route<dynamic> route) => false);
-          } catch (e) {
-            print(e.toString());
-          }
-        } else {
-          try {
-            await databaseReference.collection("clubs").doc(user.uid).set({
-              'name': _customerName.trim(),
-              'email': _email.trim(),
-              'phoneNumber': _phoneNumber.trim(),
-              'age': _age.trim(),
-              'gender': _gender,
-              'userType': _userType,
-            });
-            var response = await Networking.post('user/add-new-user', {
-              'name': _customerName.trim(),
-              'email': _email.trim(),
-              'phone': _phoneNumber.trim(),
-              'age': _age.trim(),
-              'gender': _gender,
-              'userCategory': _userType,
-              'userId': user.uid,
-            });
-            print('${user.uid} updated to server: $response');
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ClubHomeScreen(),
-              ),
-              (Route<dynamic> route) => false,
-            );
-          } catch (e) {
-            print(e.toString());
-          }
-        }
-        PersistenceHandler.setter("uid", user.uid);
-        PersistenceHandler.setter("userType", _userType);
-      }
-    } catch (e) {
-      loading = false;
-      ShowAlert.showAlert(context, e.errormessage);
-    }
-  }
-
-  TextFormField buildNameFormField() {
+  TextFormField buildNameFormField(
+    SignUpViewModel viewModel,
+    BuildContext context,
+  ) {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
+      style: const TextStyle(color: Colors.white70),
       keyboardType: TextInputType.name,
       textCapitalization: TextCapitalization.words,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.go,
-      focusNode: nameFocusNode,
-      onSaved: (newValue) => _customerName = newValue,
+      focusNode: viewModel.nameFocusNode,
+      onSaved: (newValue) => viewModel.name = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: "Please Enter your name");
+          viewModel.removeError(error: "Please Enter your name");
         }
-        return null;
       },
       validator: (value) {
-        if (value.isEmpty) {
-          addError(error: "Please Enter your name");
+        if (value == null) {
+          viewModel.addError(error: "Please Enter your name");
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Name",
         hintText: "Enter your Name",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+        prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/User.svg"),
       ),
       onFieldSubmitted: (value) {
-        nameFocusNode.unfocus();
-        FocusScope.of(context).requestFocus(emailFocusNode);
+        viewModel.nameFocusNode.unfocus();
+        FocusScope.of(context).requestFocus(viewModel.emailFocusNode);
       },
     );
   }
 
-  TextFormField buildEmailFormField() {
+  TextFormField buildEmailFormField(
+      SignUpViewModel viewModel, BuildContext context) {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
+      style: const TextStyle(color: Colors.white70),
       keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.go,
-      focusNode: emailFocusNode,
-      onSaved: (newValue) => _email = newValue,
+      focusNode: viewModel.emailFocusNode,
+      onSaved: (newValue) => viewModel.email = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
+          viewModel.removeError(error: kEmailNullError);
         } else if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
+          viewModel.removeError(error: kInvalidEmailError);
         }
-        return null;
       },
       validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kEmailNullError);
+        if (value == null || value.isEmpty) {
+          viewModel.addError(error: kEmailNullError);
           return "";
         } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
+          viewModel.addError(error: kInvalidEmailError);
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Email",
         hintText: "Enter your email",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+        prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/Mail.svg"),
       ),
       onFieldSubmitted: (value) {
-        emailFocusNode.unfocus();
-        FocusScope.of(context).requestFocus(phoneNumberFocusNode);
+        viewModel.emailFocusNode.unfocus();
+        FocusScope.of(context).requestFocus(viewModel.phoneNumberFocusNode);
       },
     );
   }
 
-  TextFormField buildPhoneNumberFormField() {
+  TextFormField buildPhoneNumberFormField(
+      SignUpViewModel viewModel, BuildContext context) {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
+      style: const TextStyle(color: Colors.white70),
       keyboardType: TextInputType.phone,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.go,
-      focusNode: phoneNumberFocusNode,
-      onSaved: (newValue) => _phoneNumber = newValue,
+      focusNode: viewModel.phoneNumberFocusNode,
+      onSaved: (newValue) => viewModel.phoneNumber = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: "Please Enter your Phone Number");
+          viewModel.removeError(error: "Please Enter your Phone Number");
         } else if (value.length == 10) {
-          removeError(error: "Please Enter valid Phone Number");
+          viewModel.removeError(error: "Please Enter valid Phone Number");
         }
-        return null;
       },
       validator: (value) {
-        if (value.isEmpty) {
-          addError(error: "Please Enter your Phone Number");
+        if (value == null || value.isEmpty) {
+          viewModel.addError(error: "Please Enter your Phone Number");
           return "";
         } else if (value.length != 10) {
-          addError(error: "Please Enter valid Phone Number");
+          viewModel.addError(error: "Please Enter valid Phone Number");
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Phone Number",
         hintText: "Enter your Phone Number",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Call-grey.svg"),
+        prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/Call-grey.svg"),
       ),
       onFieldSubmitted: (value) {
-        phoneNumberFocusNode.unfocus();
-        FocusScope.of(context).requestFocus(passwordFocusNode);
+        viewModel.phoneNumberFocusNode.unfocus();
+        FocusScope.of(context).requestFocus(viewModel.passwordFocusNode);
       },
     );
   }
 
-  TextFormField buildPasswordFormField() {
+  TextFormField buildPasswordFormField(
+      SignUpViewModel viewModel, BuildContext context) {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
-      obscureText: _obscureText,
+      style: const TextStyle(color: Colors.white70),
+      obscureText: viewModel.obscureText,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.go,
-      focusNode: passwordFocusNode,
-      onSaved: (newValue) => _password = newValue,
+      focusNode: viewModel.passwordFocusNode,
+      onSaved: (newValue) => viewModel.password = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kPassNullError);
+          viewModel.removeError(error: kPassNullError);
         } else if (value.length >= 6) {
-          removeError(error: kShortPassError);
+          viewModel.removeError(error: kShortPassError);
         }
-        _password = value;
+        viewModel.password = value;
       },
       validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kPassNullError);
+        if (value == null || value.isEmpty) {
+          viewModel.addError(error: kPassNullError);
           return "";
         } else if (value.length < 6) {
-          addError(error: kShortPassError);
+          viewModel.addError(error: kShortPassError);
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Password",
         hintText: "Enter your password",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+        prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/Lock.svg"),
       ),
       onFieldSubmitted: (value) {
-        passwordFocusNode.unfocus();
-        FocusScope.of(context).requestFocus(confirmPasswordFocusNode);
+        viewModel.passwordFocusNode.unfocus();
+        FocusScope.of(context).requestFocus(viewModel.confirmPasswordFocusNode);
       },
     );
   }
 
-  TextFormField buildConformPassFormField() {
+  TextFormField buildConformPassFormField(
+      SignUpViewModel viewModel, BuildContext context) {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
-      obscureText: _obscureText,
+      style: const TextStyle(color: Colors.white70),
+      obscureText: viewModel.obscureText,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.go,
-      focusNode: confirmPasswordFocusNode,
-      onSaved: (newValue) => _confirmPassword = newValue,
+      focusNode: viewModel.confirmPasswordFocusNode,
+      onSaved: (newValue) => viewModel.confirmPassword = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kPassNullError);
-        } else if (value.isNotEmpty && _password == _confirmPassword) {
-          removeError(error: kMatchPassError);
+          viewModel.removeError(error: kPassNullError);
+        } else if (value.isNotEmpty &&
+            viewModel.password == viewModel.confirmPassword) {
+          viewModel.removeError(error: kMatchPassError);
         }
-        _confirmPassword = value;
+        viewModel.confirmPassword = value;
       },
       validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kPassNullError);
+        if (value == null || value.isEmpty) {
+          viewModel.addError(error: kPassNullError);
           return "";
-        } else if ((_password != value)) {
-          addError(error: kMatchPassError);
+        } else if (viewModel.password != value) {
+          viewModel.addError(error: kMatchPassError);
           return "";
         }
         return null;
@@ -391,21 +256,21 @@ class _SignUpFormState extends State<SignUpForm> {
         labelText: "Confirm Password",
         hintText: "Re-enter your password",
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+        prefixIcon: const CustomSuffixIcon(svgIcon: "assets/icons/Lock.svg"),
         suffixIcon: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14),
-          child: _obscureText
+          child: viewModel.obscureText
               ? GestureDetector(
-                  onTap: () => _toggle(),
-                  child: FaIcon(
+                  onTap: () => viewModel.toggle(),
+                  child: const FaIcon(
                     FontAwesomeIcons.eyeSlash,
                     size: 17,
                     color: Colors.white70,
                   ),
                 )
               : GestureDetector(
-                  onTap: () => _toggle(),
-                  child: FaIcon(
+                  onTap: () => viewModel.toggle(),
+                  child: const FaIcon(
                     FontAwesomeIcons.eye,
                     size: 17,
                     color: Colors.white70,
@@ -414,59 +279,56 @@ class _SignUpFormState extends State<SignUpForm> {
         ),
       ),
       onFieldSubmitted: (value) {
-        confirmPasswordFocusNode.unfocus();
-        FocusScope.of(context).requestFocus(ageFocusNode);
+        viewModel.confirmPasswordFocusNode.unfocus();
+        FocusScope.of(context).requestFocus(viewModel.ageFocusNode);
       },
     );
   }
 
-  Expanded buildAgeFormField() {
+  Expanded buildAgeFormField(SignUpViewModel viewModel, BuildContext context) {
     return Expanded(
       child: TextFormField(
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
         keyboardType: TextInputType.number,
         cursorColor: Colors.white70,
         textInputAction: TextInputAction.done,
-        focusNode: ageFocusNode,
-        onSaved: (newValue) => _age = newValue,
+        focusNode: viewModel.ageFocusNode,
+        onSaved: (newValue) => viewModel.age = newValue,
         onChanged: (value) {
           if (value.isNotEmpty) {
-            removeError(error: "Please Enter your age");
+            viewModel.removeError(error: "Please Enter your age");
           }
-          return null;
         },
         validator: (value) {
-          if (value.isEmpty) {
-            addError(error: "Please Enter your age");
+          if (value == null || value.isEmpty) {
+            viewModel.addError(error: "Please Enter your age");
             return "";
           }
           return null;
         },
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: "Age",
           hintText: "Your Age",
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Age.svg"),
+          prefixIcon: CustomSuffixIcon(svgIcon: "assets/icons/Age.svg"),
         ),
         onFieldSubmitted: (value) {
-          ageFocusNode.unfocus();
-          FocusScope.of(context).requestFocus(genderFocusNode);
+          viewModel.ageFocusNode.unfocus();
+          FocusScope.of(context).requestFocus(viewModel.genderFocusNode);
         },
       ),
     );
   }
 
-  Expanded buildGenderFormField() {
+  Expanded buildGenderFormField(
+      SignUpViewModel viewModel, BuildContext context) {
     return Expanded(
       child: DropdownButtonFormField<String>(
-        value: _gender,
-        isExpanded: false,
+        value: viewModel.gender,
         dropdownColor: kSecondaryColor,
-        style: TextStyle(color: kPrimaryColor),
-        onChanged: (String value) {
-          setState(() {
-            _gender = value;
-          });
+        style: const TextStyle(color: kPrimaryColor),
+        onChanged: (String? value) {
+          viewModel.gender = value;
         },
         items: ['Male', 'Female', 'Others']
             .map<DropdownMenuItem<String>>((String value) {
@@ -478,7 +340,7 @@ class _SignUpFormState extends State<SignUpForm> {
           );
         }).toList(),
         validator: (value) => value == null ? 'Select Gender' : null,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Gender',
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         ),
@@ -486,44 +348,44 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Row buildUserTypeRadioButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Radio(
-          activeColor: kPrimaryColor,
-          value: 0,
-          groupValue: _radioValue,
-          onChanged: _handleRadioValueChange,
-        ),
-        Text(
-          "Customer",
-        ),
-        Radio(
-          activeColor: kPrimaryColor,
-          value: 1,
-          groupValue: _radioValue,
-          onChanged: _handleRadioValueChange,
-        ),
-        Text(
-          "Club",
-        ),
-      ],
-    );
-  }
+  // Row buildUserTypeRadioButtons(SignUpViewModel viewModel, BuildContext context) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: <Widget>[
+  //       Radio<int>(
+  //         activeColor: kPrimaryColor,
+  //         value: 0,
+  //         groupValue: viewModel.radioValue,
+  //         onChanged: viewModel.handleRadioValueChange,
+  //       ),
+  //       Text(
+  //         "Customer",
+  //       ),
+  //       Radio(
+  //         activeColor: kPrimaryColor,
+  //         value: 1,
+  //         groupValue: viewModel.radioValue,
+  //         onChanged: viewModel.handleRadioValueChange,
+  //       ),
+  //       Text(
+  //         "Club",
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  void _handleRadioValueChange(int value) {
-    setState(() {
-      _radioValue = value;
+  // void _handleRadioValueChange(int value) {
+  //   setState(() {
+  //     _radioValue = value;
 
-      switch (_radioValue) {
-        case 0:
-          _userType = 'customer';
-          break;
-        case 1:
-          _userType = 'club';
-          break;
-      }
-    });
-  }
+  //     switch (_radioValue) {
+  //       case 0:
+  //         _userType = 'customer';
+  //         break;
+  //       case 1:
+  //         _userType = 'club';
+  //         break;
+  //     }
+  //   });
+  // }
 }

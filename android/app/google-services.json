@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:459374668387:android:ac91f44b8c77229bb16656",
+        "mobilesdk_app_id": "1:459374668387:android:38b2fe46aa3a9b88b16656",
         "android_client_info": {
-          "package_name": "com.example.bookario"
+          "package_name": "com.pushhub.bookario"
         }
       },
       "oauth_client": [
@@ -30,6 +30,13 @@
             {
               "client_id": "459374668387-hmj6h9nl60c9mafjs87n87nbg261gacq.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "459374668387-dm2lfn91b7g101ii4pq2vgpfdslp8h0l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pushhub.bookario"
+              }
             }
           ]
         }

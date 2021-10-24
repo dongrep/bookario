@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:flutter/material.dart';
 
 const kPrimaryColor = Color(0xFFFFFFFF);
 const kPrimaryLightColor = Color(0xFFFFFFFF);

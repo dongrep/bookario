@@ -28,7 +28,6 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
       body: _bodyController.text,
       subject: _subjectController.text,
       recipients: [_recipientController.text],
-      isHTML: false,
     );
 
     String platformResponse;
@@ -42,14 +41,16 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
 
     if (!mounted) return;
 
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(platformResponse),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(platformResponse),
+      ),
+    );
   }
 
   bool validateAndSave() {
-    final FormState form = _formKey.currentState;
-    if (form.validate()) {
+    final FormState? form = _formKey.currentState;
+    if (form!.validate()) {
       form.save();
       return true;
     }
@@ -61,16 +62,15 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: Text("Help & Support"),
+        title: const Text("Help & Support"),
       ),
       body: Container(
-        margin: EdgeInsets.only(top: 20),
-        padding: EdgeInsets.all(20),
+        margin: const EdgeInsets.only(top: 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Text("Write to us:"),
-            SizedBox(height: 20),
+            const Text("Write to us:"),
+            const SizedBox(height: 20),
             Form(
               key: _formKey,
               child: Column(
@@ -101,7 +101,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
 
   TextFormField emailSubject() {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
+      style: const TextStyle(color: Colors.white70),
       controller: _subjectController,
       keyboardType: TextInputType.multiline,
       maxLines: null,
@@ -109,12 +109,12 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
       textInputAction: TextInputAction.go,
       focusNode: subjectFocusNode,
       validator: (value) {
-        if (value.isEmpty) {
+        if (value == null || value.isEmpty) {
           return "Enter the subject";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Subject",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
@@ -127,7 +127,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
 
   TextFormField emailBody() {
     return TextFormField(
-      style: TextStyle(color: Colors.white70),
+      style: const TextStyle(color: Colors.white70),
       controller: _bodyController,
       keyboardType: TextInputType.text,
       minLines: 1,
@@ -136,12 +136,12 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
       textInputAction: TextInputAction.done,
       focusNode: bodyFocusNode,
       validator: (value) {
-        if (value.isEmpty) {
+        if (value == null || value.isEmpty) {
           return "Email body cannot be empty";
         }
         return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: "Body",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),

@@ -11,11 +11,14 @@ Map<String, String> allHeaders = {
 };
 
 class Networking {
-  static dynamic post(String route, Map<dynamic, dynamic> parameters) async {
+  dynamic post(String route, Map<dynamic, dynamic> parameters) async {
     print('POST: Sending Post Request');
 
-    var response = await http.post(baseUrl + route,
-        body: json.encode(parameters), headers: allHeaders);
+    final response = await http.post(
+      Uri(path: baseUrl + route),
+      body: json.encode(parameters),
+      headers: allHeaders,
+    );
 
     if (response.statusCode == 200) {
       var body;
@@ -34,9 +37,9 @@ class Networking {
 
   static dynamic getData(String route, Map<String, dynamic> parameters) async {
     print('Sending Get request...');
-    String queryString = Uri(queryParameters: parameters).query;
-    var requestUrl = baseUrl + route + '?' + queryString;
-    var response = await http.get(requestUrl);
+    final String queryString = Uri(queryParameters: parameters).query;
+    final requestUrl = baseUrl + route + '?' + queryString;
+    final response = await http.get(Uri(path: requestUrl));
 
     if (response.statusCode == 200) {
       var body;

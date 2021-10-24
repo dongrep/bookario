@@ -7,11 +7,11 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EventDetailsArguments agrs =
-        ModalRoute.of(context).settings.arguments;
+    // final EventDetailsArguments agrs =
+    //     ModalRoute.of(context).settings.arguments;
     return Scaffold(
-      body: Body(event: agrs.event),
-    );
+        // body: Body(event: agrs.event),
+        );
   }
 }
 

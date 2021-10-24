@@ -1,12 +1,15 @@
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
 import 'package:bookario/components/change_onboarding_screen.dart';
 import 'package:bookario/screens/sign_up/sign_up_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 import '../../../components/size_config.dart';
 
 class SigninScreenBottomText extends StatelessWidget {
   const SigninScreenBottomText({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -18,7 +21,7 @@ class SigninScreenBottomText extends StatelessWidget {
           textFirst: "Don't have an account? ",
           clickableText: "Sign Up",
           onPressed: () {
-            Navigator.pushNamed(context, SignUpScreen.routeName);
+            locator<NavigationService>().navigateTo(Routes.signUpScreen);
           },
         ),
       ],

@@ -7,7 +7,7 @@ import '../../../components/size_config.dart';
 
 class SignupScreenBottomText extends StatelessWidget {
   const SignupScreenBottomText({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

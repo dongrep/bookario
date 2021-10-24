@@ -5,12 +5,12 @@ import 'size_config.dart';
 
 class DefaultButton extends StatelessWidget {
   const DefaultButton({
-    Key key,
+    Key? key,
     this.text,
-    this.press,
+    required this.press,
   }) : super(key: key);
-  final String text;
-  final Function press;
+  final String? text;
+  final Function() press;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +24,14 @@ class DefaultButton extends StatelessWidget {
         color: kSecondaryColor,
         onPressed: press,
         child: Text(
-          text,
+          text.toString(),
           style: TextStyle(
-              fontSize: SizeConfig.orientation == Orientation.portrait
-                  ? SizeConfig.screenHeight * .03
-                  : SizeConfig.screenHeight * .05,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
+            fontSize: SizeConfig.orientation == Orientation.portrait
+                ? SizeConfig.screenHeight * .03
+                : SizeConfig.screenHeight * .05,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:flutter/material.dart';
 
 import 'sign_up_form.dart';
 

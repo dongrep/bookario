@@ -1,16 +1,14 @@
-import 'package:bookario/components/bottom_navbar.dart';
-import 'package:bookario/components/persistence_handler.dart';
-import 'package:bookario/screens/club_UI_screens/home/club_home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
+import 'package:bookario/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:bookario/routes.dart';
-import 'package:bookario/screens/splash/splash_screen.dart';
-import 'package:bookario/theme.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  setupLocator();
   runApp(MyApp());
 }
 
@@ -20,34 +18,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final User user = FirebaseAuth.instance.currentUser;
-  String userType;
-
-  void getUserType() async {
-    userType = await PersistenceHandler.getter("userType");
-    setState(() {
-      userType = userType;
-    });
-    print(userType);
-  }
-
-  @override
-  void initState() {
-    print(userType);
-    getUserType();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Bookario',
       theme: theme(),
-      home: (user != null && userType != null)
-          ? (userType == 'customer' ? BottomCustomNavBar() : ClubHomeScreen())
-          : SplashScreen(),
-      routes: routes,
+      navigatorKey: StackedService.navigatorKey,
+      onGenerateRoute: StackedRouter().onGenerateRoute,
+      initialRoute: Routes.startUpView,
     );
   }
 }

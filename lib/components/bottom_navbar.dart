@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:bookario/components/constants.dart';
-import 'package:bookario/screens/customer_UI_screens/home/customer_home_screen.dart';
+import 'package:bookario/components/size_config.dart';
+import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/premium_clubs/premium_club_list.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen.dart';
-import 'package:bookario/components/size_config.dart';
 import 'package:flutter/material.dart';
 
 class BottomCustomNavBar extends StatefulWidget {
@@ -15,7 +15,7 @@ class BottomCustomNavBar extends StatefulWidget {
 
 class _BottomCustomNavBarState extends State<BottomCustomNavBar>
     with SingleTickerProviderStateMixin {
-  PageController _pageController;
+  PageController _pageController = PageController();
   int _currentIndex = 0;
   final List<Widget> _children = [
     HomeScreen(),
@@ -23,8 +23,8 @@ class _BottomCustomNavBarState extends State<BottomCustomNavBar>
     ProfileScreen()
   ];
 
-  Future<bool> _exitApp(BuildContext context) {
-    return showDialog(
+  Future<bool?> _exitApp(BuildContext context) {
+    return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -36,31 +36,31 @@ class _BottomCustomNavBarState extends State<BottomCustomNavBar>
           ),
           title: Text(
             "Want to exit?",
-            style: Theme.of(context).textTheme.headline6.copyWith(
+            style: Theme.of(context).textTheme.headline6!.copyWith(
                 fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: <Widget>[
             MaterialButton(
               onPressed: () => Navigator.of(context).pop(false),
+              splashColor: Colors.red[50],
               child: Text(
                 "No",
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1
+                    .bodyText1!
                     .copyWith(color: kSecondaryColor),
               ),
-              splashColor: Colors.red[50],
             ),
             MaterialButton(
               onPressed: () => exit(0),
+              splashColor: Colors.red[50],
               child: Text(
                 "Yes",
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1
+                    .bodyText1!
                     .copyWith(color: kSecondaryColor),
               ),
-              splashColor: Colors.red[50],
             ),
           ],
         );
@@ -71,7 +71,7 @@ class _BottomCustomNavBarState extends State<BottomCustomNavBar>
   @override
   void initState() {
     super.initState();
-    _pageController = new PageController();
+    _pageController = PageController();
   }
 
   @override
@@ -83,34 +83,31 @@ class _BottomCustomNavBarState extends State<BottomCustomNavBar>
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return WillPopScope(
-      onWillPop: () => _exitApp(context),
-      child: Scaffold(
-        body: PageView(
-            onPageChanged: onPageChanged,
-            controller: _pageController,
-            children: _children),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xFF141414),
-          unselectedItemColor: Colors.grey,
-          fixedColor: kSecondaryColor,
-          onTap: onTabTapped,
-          currentIndex: _currentIndex,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.star),
-              label: 'Premium Events',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            )
-          ],
-        ),
+    return Scaffold(
+      body: PageView(
+          onPageChanged: onPageChanged,
+          controller: _pageController,
+          children: _children),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color(0xFF141414),
+        unselectedItemColor: Colors.grey,
+        fixedColor: kSecondaryColor,
+        onTap: onTabTapped,
+        currentIndex: _currentIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Premium Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          )
+        ],
       ),
     );
   }
@@ -125,7 +122,7 @@ class _BottomCustomNavBarState extends State<BottomCustomNavBar>
 
   void onPageChanged(int value) {
     setState(() {
-      this._currentIndex = value;
+      _currentIndex = value;
     });
   }
 }

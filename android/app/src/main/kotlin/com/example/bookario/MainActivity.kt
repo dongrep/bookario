@@ -1,4 +1,4 @@
-package com.example.bookario
+package com.pushhub.bookario
 
 import io.flutter.embedding.android.FlutterActivity
 
