@@ -1,41 +1,41 @@
+import 'dart:developer';
+
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/networking.dart';
+import 'package:bookario/models/event_model.dart';
+import 'package:bookario/services/firebase_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeScreenViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
+  final FirebaseService _firebaseService = locator<FirebaseService>();
 
-  int offset = 0, limit = 10;
-  List<dynamic> eventData = [], locations = [];
+  int offset = 0;
+  int limit = 10;
+  List<Event> allEvents = [];
+  List locations = [];
   List<String> allLocations = [];
-  bool hasEvents = false,
-      homeLoading = true,
-      loadMore = false,
-      loadingMore = false,
-      filterApplied = false;
+  bool hasEvents = false;
+  bool homeLoading = true;
+  bool loadMore = false;
+  bool loadingMore = false;
+  bool filterApplied = false;
   String location = 'Magarpatta';
 
-  getAllEvents() async {
+  Future getAllEvents() async {
     try {
       setBusy(true);
-      // final response = await Networking.getData('events/get-all-events', {
-      //   "limit": limit.toString(),
-      //   "offset": offset.toString(),
-      // });
-      // if (response['data'].length > 0) {
-      //   hasEvents = true;
-      //   loadMore = true;
-      //   loadingMore = false;
-      //   eventData += response['data'];
-      // } else {
-      //   homeLoading = false;
-      //   loadMore = false;
-      // }
-
-    } catch (e) {
+      final List<Event> events = await _firebaseService.getEvents();
+      allEvents.addAll(events);
+      if (allEvents.isNotEmpty) {
+        hasEvents = true;
+      }
       setBusy(false);
-      print(e);
+      notifyListeners();
+    } catch (e) {
+      log(e.toString());
+      setBusy(false);
     }
   }
 

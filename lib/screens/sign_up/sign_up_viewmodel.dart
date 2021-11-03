@@ -10,7 +10,6 @@ class SignUpViewModel extends BaseViewModel {
   final formKey = GlobalKey<FormState>();
 
   final NavigationService _navigationService = locator<NavigationService>();
-  final DialogService _dialogService = locator<DialogService>();
   final AuthenticationService _authenticationService =
       locator<AuthenticationService>();
 
@@ -70,7 +69,7 @@ class SignUpViewModel extends BaseViewModel {
       password: password!,
     );
     if (result) {
-      _navigationService.clearStackAndShow(Routes.homeScreen);
+      _navigationService.clearStackAndShow(Routes.landingView);
     }
     setBusy(false);
   }

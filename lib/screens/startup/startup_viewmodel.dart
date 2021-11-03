@@ -14,10 +14,10 @@ class StartUpViewModel extends BaseViewModel {
     final bool isLoggedIn =
         await locator<AuthenticationService>().checkUserLoggedIn();
 
-    if (!isLoggedIn) {
-      _navigationService.clearStackAndShow(Routes.splashScreen);
+    if (isLoggedIn) {
+      _navigationService.replaceWith(Routes.landingView);
     } else {
-      _navigationService.replaceWith(Routes.profileScreen);
+      _navigationService.clearStackAndShow(Routes.splashScreen);
     }
 
     setBusy(false);

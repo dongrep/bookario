@@ -10,7 +10,9 @@ import 'package:stacked_services/stacked_services.dart';
 
 class EditProfile extends StatelessWidget {
   Future _discardChanges(
-      BuildContext context, ProfileScreenViewModel viewModel) {
+    BuildContext context,
+    ProfileScreenViewModel viewModel,
+  ) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -60,63 +62,66 @@ class EditProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileScreenViewModel>.reactive(
-        builder: (context, viewModel, child) => WillPopScope(
-              onWillPop: () async =>
-                  locator<NavigationService>().back(result: false),
-              child: Scaffold(
-                key: viewModel.scaffoldKey,
-                appBar: AppBar(
-                  title: const Text("Edit Profile"),
-                ),
-                body: SafeArea(
-                  child: viewModel.isBusy
-                      ? const Loading()
-                      : SingleChildScrollView(
-                          child: Container(
-                            height: SizeConfig.screenHeight * 0.8,
-                            margin: const EdgeInsets.only(top: 20),
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const SizedBox(height: 10),
-                                nameFormField(context, viewModel),
-                                const SizedBox(height: 20),
-                                phoneNumberFormField(context, viewModel),
-                                const SizedBox(height: 20),
-                                ageFormFIeld(viewModel),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    discardChanges(context, viewModel),
-                                    MaterialButton(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      color: kSecondaryColor,
-                                      child: const Text(
-                                        "Update",
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      onPressed: () async {
-                                        await viewModel.updateUserProfile();
-                                      },
+        builder: (context, viewModel, child) {
+          viewModel.populateFields();
+          return WillPopScope(
+            onWillPop: () async =>
+                locator<NavigationService>().back(result: false),
+            child: Scaffold(
+              key: viewModel.scaffoldKey,
+              appBar: AppBar(
+                title: const Text("Edit Profile"),
+              ),
+              body: SafeArea(
+                child: viewModel.isBusy
+                    ? const Loading()
+                    : SingleChildScrollView(
+                        child: Container(
+                          height: SizeConfig.screenHeight * 0.8,
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const SizedBox(height: 10),
+                              nameFormField(context, viewModel),
+                              const SizedBox(height: 20),
+                              phoneNumberFormField(context, viewModel),
+                              const SizedBox(height: 20),
+                              ageFormFIeld(viewModel),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  discardChanges(context, viewModel),
+                                  MaterialButton(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
                                     ),
-                                  ],
-                                )
-                              ],
-                            ),
+                                    color: kSecondaryColor,
+                                    child: const Text(
+                                      "Update",
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      await viewModel.updateUserProfile();
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
                         ),
-                ),
+                      ),
               ),
             ),
+          );
+        },
         viewModelBuilder: () => ProfileScreenViewModel());
   }
 

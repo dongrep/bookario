@@ -48,12 +48,12 @@ class SignInViewModel extends BaseViewModel {
 
   Future login() async {
     setBusy(true);
-    final result = await _authenticationService.loginWithEmail(
+    final User? result = await _authenticationService.loginWithEmail(
       email: email,
       password: password,
     );
-    if (result == "Success") {
-      _navigationService.clearStackAndShow(Routes.profileScreen);
+    if (result is User) {
+      _navigationService.clearStackAndShow(Routes.landingView);
     }
     setBusy(false);
   }

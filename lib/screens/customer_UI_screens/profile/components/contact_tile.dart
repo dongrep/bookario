@@ -33,17 +33,17 @@ class _ContactTileState extends State<ContactTile> {
                   "assets/icons/gmail.svg",
                   height: 16,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
-                Text(
+                const Text(
                   'Help & Support',
                   style: TextStyle(color: Colors.white70),
                 ),
               ],
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SvgPicture.asset("assets/icons/arrow_right.svg",
                   height: 14, color: Colors.white70),
             ),

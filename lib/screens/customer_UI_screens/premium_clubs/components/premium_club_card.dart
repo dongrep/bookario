@@ -14,11 +14,11 @@ class PremiumEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        DetailsScreen.routeName,
-        arguments: EventDetailsArguments(event: event),
-      ),
+      // onTap: () => Navigator.pushNamed(
+      //   context,
+      //   DetailsScreen.routeName,
+      //   arguments: EventDetailsArguments(event: event),
+      // ),
       child: Container(
         margin: EdgeInsets.only(bottom: 5, right: 2, left: 2),
         child: ClipRRect(

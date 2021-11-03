@@ -4,6 +4,7 @@ import 'package:bookario/models/user_model.dart';
 import 'package:bookario/services/authentication_service.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -37,6 +38,7 @@ class ProfileScreenViewModel extends BaseViewModel {
   final phoneNumberEditingController = TextEditingController();
 
   void populateFields() {
+    user = _authenticationService.currentUser!;
     nameEditingController.text = user.name;
     ageEditingController.text = user.age;
     phoneNumberEditingController.text = user.phone;
@@ -45,7 +47,6 @@ class ProfileScreenViewModel extends BaseViewModel {
 
   Future<void> updateUserProfile() async {
     try {
-      user = _authenticationService.currentUser!;
       final UserModel newUser = UserModel(
         id: user.id,
         name: nameEditingController.text,
@@ -86,5 +87,29 @@ class ProfileScreenViewModel extends BaseViewModel {
     await _authenticationService.checkUserLoggedIn();
     user = _authenticationService.currentUser!;
     notifyListeners();
+  }
+
+  Future becomeAPromoter() async {
+    user = _authenticationService.currentUser!;
+    try {
+      final String promoterId =
+          user.name.substring(0, 4) + randomBetween(1000, 9999).toString();
+      final UserModel newUser = UserModel(
+        id: user.id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email,
+        age: user.age,
+        gender: user.gender,
+        promoterId: promoterId,
+      );
+      _firebaseService.updateUser(newUser);
+      await _dialogService.showDialog(
+          title: "Success", description: "Profile Updated!");
+      _navigationService.back(result: true);
+    } catch (e) {
+      print('Error updating user profile: ');
+      print(e);
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:bookario/screens/customer_UI_screens/profile/components/body.dart';
-import 'package:bookario/screens/customer_UI_screens/profile/components/edit_profile.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -8,6 +7,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileScreenViewModel>.reactive(
+      onModelReady: (viewModel) => viewModel.populateDetails(),
       builder: (context, viewModel, child) {
         return Scaffold(
           appBar: AppBar(
@@ -46,7 +46,9 @@ class ProfileScreen extends StatelessWidget {
               )
             ],
           ),
-          body: Body(),
+          body: Body(
+            viewModel: viewModel,
+          ),
         );
       },
       viewModelBuilder: () => ProfileScreenViewModel(),

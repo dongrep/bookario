@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/models/user_model.dart';
 import 'package:bookario/services/firebase_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationService {
@@ -13,7 +12,7 @@ class AuthenticationService {
   UserModel? _currentUser;
   UserModel? get currentUser => _currentUser;
 
-  Future loginWithEmail({
+  Future<User?> loginWithEmail({
     required String email,
     required String password,
   }) async {
@@ -25,9 +24,10 @@ class AuthenticationService {
       );
 
       _populateCurrentUser(authResult.user);
-      return authResult;
+      return authResult.user;
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      log(e.message.toString());
+      return null;
     }
   }
 
@@ -76,7 +76,6 @@ class AuthenticationService {
   Future _populateCurrentUser(User? user) async {
     if (user != null) {
       _currentUser = await _firebaseService.getUserProfile(user.uid);
-      log(_currentUser.toString());
     }
   }
 

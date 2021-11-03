@@ -40,7 +40,6 @@ class LogoutTile extends StatelessWidget {
             MaterialButton(
               onPressed: () async {
                 viewModel.logout();
-                await FirebaseAuth.instance.signOut();
               },
               splashColor: kPrimaryColor,
               child: Text(
