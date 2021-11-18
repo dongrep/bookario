@@ -1,20 +1,26 @@
-import 'package:bookario/screens/customer_UI_screens/history/booking_history.dart';
+import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
+import 'package:bookario/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class ViewBookings extends StatelessWidget {
-  const ViewBookings({
-    Key? key,
-  }) : super(key: key);
+  const ViewBookings({Key? key, required this.user}) : super(key: key);
 
+  final UserModel user;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => BookingHistory()),
+      onTap: () async {
+        await locator<NavigationService>().navigateTo(
+          Routes.bookingHistory,
+          arguments: BookingHistoryArguments(
+            passes: user.bookedPasses != null
+                ? user.bookedPasses!.map((e) => e.toString()).toList()
+                : [],
+          ),
         );
       },
       child: Padding(
@@ -28,10 +34,10 @@ class ViewBookings extends StatelessWidget {
                   "assets/icons/tickets.svg",
                   height: 20,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
-                Text(
+                const Text(
                   'Bookings',
                   style: TextStyle(color: Colors.white70),
                 ),

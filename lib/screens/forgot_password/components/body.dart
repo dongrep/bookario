@@ -1,3 +1,4 @@
+import 'package:bookario/app.router.dart';
 import 'package:bookario/components/change_onboarding_screen.dart';
 import 'package:bookario/components/custom_suffix_icon.dart';
 import 'package:bookario/components/default_button.dart';
@@ -194,7 +195,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             textFirst: "Don't have an account? ",
             clickableText: "Sign Up",
             onPressed: () {
-              Navigator.pushNamed(context, SignUpScreen.routeName);
+              Navigator.pushNamed(context, Routes.signUpScreen);
             },
           ),
         ],

@@ -13,6 +13,7 @@ import 'package:stacked/stacked_annotations.dart';
 import 'models/event_model.dart';
 import 'screens/customer_UI_screens/bookings/book_pass.dart';
 import 'screens/customer_UI_screens/details/details_screen.dart';
+import 'screens/customer_UI_screens/history/booking_history.dart';
 import 'screens/customer_UI_screens/home/home_screen.dart';
 import 'screens/customer_UI_screens/profile/components/edit_profile.dart';
 import 'screens/customer_UI_screens/profile/profile_screen.dart';
@@ -33,6 +34,7 @@ class Routes {
   static const String bookPass = '/book-pass';
   static const String profileScreen = '/my-profile';
   static const String editProfile = '/edit-profile';
+  static const String bookingHistory = '/booking-history';
   static const all = <String>{
     startUpView,
     splashScreen,
@@ -44,6 +46,7 @@ class Routes {
     bookPass,
     profileScreen,
     editProfile,
+    bookingHistory,
   };
 }
 
@@ -61,6 +64,7 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.bookPass, page: BookPass),
     RouteDef(Routes.profileScreen, page: ProfileScreen),
     RouteDef(Routes.editProfile, page: EditProfile),
+    RouteDef(Routes.bookingHistory, page: BookingHistory),
   ];
   @override
   Map<Type, StackedRouteFactory> get pagesMap => _pagesMap;
@@ -133,6 +137,16 @@ class StackedRouter extends RouterBase {
         settings: data,
       );
     },
+    BookingHistory: (data) {
+      var args = data.getArgs<BookingHistoryArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => BookingHistory(
+          key: args.key,
+          passes: args.passes,
+        ),
+        settings: data,
+      );
+    },
   };
 }
 
@@ -152,4 +166,11 @@ class BookPassArguments {
   final Key? key;
   final Event event;
   BookPassArguments({this.key, required this.event});
+}
+
+/// BookingHistory arguments holder class
+class BookingHistoryArguments {
+  final Key? key;
+  final List<String> passes;
+  BookingHistoryArguments({this.key, required this.passes});
 }

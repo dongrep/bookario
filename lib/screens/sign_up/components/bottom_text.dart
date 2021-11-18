@@ -1,3 +1,4 @@
+import 'package:bookario/app.router.dart';
 import 'package:bookario/components/change_onboarding_screen.dart';
 import 'package:bookario/screens/sign_in/sign_in_screen.dart';
 import 'package:bookario/screens/sign_up/components/terms_and_conditions.dart';
@@ -19,11 +20,11 @@ class SignupScreenBottomText extends StatelessWidget {
           textFirst: "Already have an account? ",
           clickableText: "Sign In",
           onPressed: () {
-            Navigator.pushNamed(context, SignInScreen.routeName);
+            Navigator.pushNamed(context, Routes.signInScreen);
           },
         ),
         SizedBox(height: getProportionateScreenHeight(20)),
-        TermsAndConditions(),
+        const TermsAndConditions(),
         SizedBox(height: getProportionateScreenHeight(20)),
       ],
     );

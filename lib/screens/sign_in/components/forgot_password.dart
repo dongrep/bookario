@@ -16,7 +16,7 @@ class ForgotPassword extends StatelessWidget {
         GestureDetector(
           onTap: () =>
               Navigator.pushNamed(context, ForgotPasswordScreen.routeName),
-          child: Text(
+          child: const Text(
             "Forgot Password?",
             style: TextStyle(color: kSecondaryColor),
           ),

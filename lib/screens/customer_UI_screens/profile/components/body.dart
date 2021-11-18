@@ -21,7 +21,7 @@ class Body extends StatelessWidget {
         children: [
           UserDetails(),
           divider(),
-          const ViewBookings(),
+          ViewBookings(user: viewModel.user),
           divider(),
           const ContactTile(),
           divider(),

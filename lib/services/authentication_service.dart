@@ -5,9 +5,13 @@ import 'package:bookario/models/user_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'local_storage_service.dart';
+
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseService _firebaseService = locator<FirebaseService>();
+  final LocalStorageService _localStorageService =
+      locator<LocalStorageService>();
 
   UserModel? _currentUser;
   UserModel? get currentUser => _currentUser;
@@ -76,6 +80,7 @@ class AuthenticationService {
   Future _populateCurrentUser(User? user) async {
     if (user != null) {
       _currentUser = await _firebaseService.getUserProfile(user.uid);
+      _localStorageService.setter("uid", _currentUser!.id!);
     }
   }
 

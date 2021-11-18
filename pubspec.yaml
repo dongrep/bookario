@@ -39,8 +39,8 @@ dependencies:
   random_string: ^2.1.0
   image_picker: ^0.8.4+3
   razorpay_flutter: ^1.2.6
-  # qr_flutter:
-  # qr_code_scanner: ^0.5.2
+  qr_flutter: ^4.0.0
+  qr_code_scanner: ^0.6.1
 
   # Architecture
   stacked: ^2.1.0
@@ -51,9 +51,9 @@ dependencies:
 
   cupertino_icons: ^1.0.3
 dev_dependencies:
+  build_runner:
   flutter_test:
     sdk: flutter
-  build_runner:
   stacked_generator:
 
 # The following section is specific to Flutter.

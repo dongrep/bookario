@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/models/event_model.dart';
+import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:bookario/services/authentication_service.dart';
 import 'package:bookario/services/firebase_service.dart';
@@ -27,7 +28,7 @@ class BookPassViewModel extends BaseViewModel {
 
   Map<String, dynamic> passEntry = {};
 
-  List<Map<String, dynamic>> passes = [];
+  List<Passes> passes = [];
 
   late Event event;
 
@@ -114,17 +115,19 @@ class BookPassViewModel extends BaseViewModel {
     if (passType == passTypes.couple) {
       maleCount++;
       femaleCount++;
-      passes.add({
-        "entryType": passEntry['entryType'],
-        "maleName": passEntry['maleName'].text,
-        "maleAge": passEntry['maleAge'].text,
-        "maleGender": 'Male',
-        "femaleName": passEntry['femaleName'].text,
-        "femaleAge": passEntry['femaleAge'].text,
-        "passType": passEntry['passType'],
-        "femaleGender": 'Female',
-        "passCost": selectedPass!.cover + selectedPass!.entry
-      });
+      passes.add(
+        Passes.fromJson({
+          "entryType": passEntry['entryType'],
+          "maleName": passEntry['maleName'].text,
+          "maleAge": int.parse(passEntry['maleAge'].text as String),
+          "maleGender": 'Male',
+          "femaleName": passEntry['femaleName'].text,
+          "femaleAge": int.parse(passEntry['femaleAge'].text as String),
+          "passType": passEntry['passType'],
+          "femaleGender": 'Female',
+          "passCost": selectedPass!.cover + selectedPass!.entry
+        }),
+      );
     } else {
       if ((passEntry['gender'] as String).contains("Male")) {
         maleCount++;
@@ -133,14 +136,14 @@ class BookPassViewModel extends BaseViewModel {
       } else {
         tableCount++;
       }
-      passes.add({
+      passes.add(Passes.fromJson({
         "entryType": passEntry['entryType'],
         "name": passEntry['name'].text,
-        "age": passEntry['age'].text,
+        "age": int.parse(passEntry['age'].text as String),
         "passType": passEntry['passType'],
         "gender": passEntry['gender'],
         "passCost": selectedPass!.cover + selectedPass!.entry
-      });
+      }));
     }
     passEntry = {};
     passType = null;
@@ -150,8 +153,11 @@ class BookPassViewModel extends BaseViewModel {
   }
 
   Future book() async {
+    //Todo: Go to payment page.
+    //Todo: Show coupon area.
     final bool result = await _firebaseService.bookPasses(
       passes: passes,
+      total: totalPrice,
       maleCount: maleCount,
       femaleCount: femaleCount,
       tableCount: tableCount,

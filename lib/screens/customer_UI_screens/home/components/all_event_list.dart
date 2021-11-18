@@ -1,10 +1,11 @@
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/size_config.dart';
-import 'package:bookario/screens/customer_UI_screens/home/components/event_card.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+
+import 'home_club_card.dart';
 
 class AllEventList extends StatelessWidget {
   @override

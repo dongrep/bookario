@@ -1,5 +1,6 @@
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass.dart';
 import 'package:bookario/screens/customer_UI_screens/details/details_screen.dart';
+import 'package:bookario/screens/customer_UI_screens/history/booking_history.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/components/edit_profile.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen.dart';
@@ -32,6 +33,7 @@ import 'package:stacked_services/stacked_services.dart';
     //*Profile Screen flow
     MaterialRoute(page: ProfileScreen, path: "/my-profile"),
     MaterialRoute(page: EditProfile, path: "/edit-profile"),
+    MaterialRoute(page: BookingHistory, path: "/booking-history"),
   ],
   dependencies: [
     LazySingleton(classType: NavigationService),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bookario/models/event_model.dart';
+import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,6 +13,8 @@ class FirebaseService {
       FirebaseFirestore.instance.collection('events');
   final CollectionReference _passesCollectionReference =
       FirebaseFirestore.instance.collection('passes');
+  final CollectionReference _promotersCollectionReference =
+      FirebaseFirestore.instance.collection('promoters');
   Future updateUser(
     UserModel user,
   ) async {
@@ -47,6 +50,16 @@ class FirebaseService {
     }
   }
 
+  Future updatePromoterList(String promoterId, String userId) async {
+    try {
+      await _promotersCollectionReference.doc(promoterId).set(
+          {"userId": userId, "promoterId": promoterId},
+          SetOptions(merge: true));
+    } catch (e) {
+      log("Update Promoter List : $e");
+    }
+  }
+
   Future<List<Event>> getEvents() async {
     try {
       final List<Event> _events = [];
@@ -67,18 +80,44 @@ class FirebaseService {
     }
   }
 
+  Future<List<EventPass>> getPasses(String userId) async {
+    final List<EventPass> eventPasses = [];
+    try {
+      final response = await _passesCollectionReference
+          .where("user", isEqualTo: userId)
+          .get();
+      for (final data in response.docs) {
+        final EventPass pass =
+            EventPass.fromJson(data.data()! as Map<String, dynamic>, data.id);
+        eventPasses.add(pass);
+      }
+      return eventPasses;
+    } catch (e) {
+      log("Get passes: $e");
+      return [];
+    }
+  }
+
   Future<bool> bookPasses(
-      {required List<Map<String, dynamic>> passes,
+      {required List<Passes> passes,
       required int maleCount,
       required int femaleCount,
       required int tableCount,
       required Event event,
-      required UserModel user}) async {
+      required UserModel user,
+      required double total}) async {
     try {
       Map<String, dynamic> data;
+      data = {
+        "user": user.id!,
+        "total": total,
+        "passes": passes
+            .map((e) => e.toJson()..removeWhere((key, value) => value == null))
+            .toList(),
+        "timeStamp": DateTime.now()
+      };
       final docRef = _passesCollectionReference.doc();
-      log(passes.toString());
-      await docRef.set({user.id!: passes, "timeStamp": DateTime.now()});
+      await docRef.set(data);
 
       //* Add pass to user profile
       data = {

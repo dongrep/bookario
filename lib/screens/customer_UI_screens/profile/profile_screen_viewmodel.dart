@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/app.router.dart';
 import 'package:bookario/models/user_model.dart';
@@ -104,12 +106,15 @@ class ProfileScreenViewModel extends BaseViewModel {
         promoterId: promoterId,
       );
       _firebaseService.updateUser(newUser);
+      _firebaseService.updatePromoterList(promoterId, newUser.id!);
       await _dialogService.showDialog(
           title: "Success", description: "Profile Updated!");
       _navigationService.back(result: true);
+      await _authenticationService.checkUserLoggedIn();
+      populateDetails();
+      notifyListeners();
     } catch (e) {
-      print('Error updating user profile: ');
-      print(e);
+      log('Error updating user profile: $e');
     }
   }
 }

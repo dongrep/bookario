@@ -7,11 +7,11 @@ class LocalStorageService {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
 
-  Future setter(String key, String value) async {
-    _sharedPreferences.setString(key, value);
+  Future<bool> setter(String key, String value) async {
+    return _sharedPreferences.setString(key, value);
   }
 
-  Future<dynamic> getter(String key) async {
+  String? getter(String key) {
     return _sharedPreferences.getString(key);
   }
 

@@ -297,15 +297,14 @@ class BookPass extends StatelessWidget {
                   key: Key(viewModel.passes[index].toString()),
                   onDismissed: (direction) {
                     viewModel.totalPrice -= double.parse(
-                      viewModel.passes[index]['passCost'].toString(),
+                      viewModel.passes[index].passCost.toString(),
                     );
-                    if ((viewModel.passes[index]['entryType'] as String)
-                        .contains("Male")) {
+                    if ((viewModel.passes[index].entryType)!.contains("Male")) {
                       --viewModel.maleCount;
-                    } else if ((viewModel.passes[index]['entryType'] as String)
+                    } else if ((viewModel.passes[index].entryType)!
                         .contains("Female")) {
                       --viewModel.femaleCount;
-                    } else if ((viewModel.passes[index]['entryType'] as String)
+                    } else if ((viewModel.passes[index].entryType)!
                         .contains("Couple")) {
                       --viewModel.maleCount;
                       --viewModel.femaleCount;
@@ -340,7 +339,7 @@ class BookPass extends StatelessWidget {
                       borderRadius: const BorderRadius.all(Radius.circular(3)),
                     ),
                     child: ClipRRect(
-                      child: (viewModel.passes[index]['entryType'] as String)
+                      child: (viewModel.passes[index].entryType)!
                               .contains("Couple")
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -351,47 +350,17 @@ class BookPass extends StatelessWidget {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Text(
-                                      "Couple's Entry,\n${viewModel.passes[index]['passType']}",
+                                      "Couple's Entry,\n${viewModel.passes[index].passType}",
                                       style: const TextStyle(
                                           fontSize: 14, color: Colors.white70),
                                     ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${viewModel.passes[index]['maleName']},',
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "Male, ",
-                                          style: TextStyle(fontSize: 17),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          viewModel.passes[index]['maleAge']
-                                              .toString(),
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                      ],
+                                    Text(
+                                      "${viewModel.passes[index].maleName},\tMale, \t${viewModel.passes[index].maleAge}",
+                                      style: const TextStyle(fontSize: 17),
                                     ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${viewModel.passes[index]['femaleName']},',
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "Female ,",
-                                          style: TextStyle(fontSize: 17),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          viewModel.passes[index]['femaleAge']
-                                              .toString(),
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                      ],
+                                    Text(
+                                      "${viewModel.passes[index].femaleName},\tFemale ,\t${viewModel.passes[index].femaleAge}",
+                                      style: const TextStyle(fontSize: 17),
                                     ),
                                   ],
                                 ),
@@ -438,23 +407,13 @@ class BookPass extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${viewModel.passes[index]['entryType']},\n${viewModel.passes[index]['passType']}",
+                                      "${viewModel.passes[index].entryType!}\n ${viewModel.passes[index].passType}",
                                       style: const TextStyle(
                                           fontSize: 14, color: Colors.white70),
                                     ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${viewModel.passes[index]['name']},',
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          viewModel.passes[index]['age']
-                                              .toString(),
-                                          style: const TextStyle(fontSize: 17),
-                                        ),
-                                      ],
+                                    Text(
+                                      '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
+                                      style: const TextStyle(fontSize: 17),
                                     ),
                                   ],
                                 ),
