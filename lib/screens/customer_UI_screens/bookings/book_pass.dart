@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bookario/components/constants.dart';
+import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass_viewmodel.dart';
@@ -10,7 +11,10 @@ import 'package:stacked/stacked.dart';
 
 class BookPass extends StatelessWidget {
   final Event event;
-  const BookPass({Key? key, required this.event}) : super(key: key);
+  final String? promoterId;
+  final CouponModel? coupon;
+  const BookPass({Key? key, required this.event, this.promoterId, this.coupon})
+      : super(key: key);
 
   Future confirmDiscard(BuildContext context) {
     return showDialog(
@@ -65,7 +69,8 @@ class BookPass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<BookPassViewModel>.reactive(
-      onModelReady: (viewModel) => viewModel.event = event,
+      onModelReady: (viewModel) =>
+          viewModel.updateDetails(event, promoterId, coupon),
       builder: (context, viewModel, child) {
         return SafeArea(
           child: Scaffold(
@@ -92,6 +97,99 @@ class BookPass extends StatelessWidget {
                             ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.grey,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Booking details:",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total Price:",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                Text(
+                                  "Rs.${viewModel.totalPrice}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total discount:",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                Text(
+                                  "Rs.${viewModel.discount}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            MaterialButton(
+                              minWidth: double.infinity,
+                              elevation: 2,
+                              color: kSecondaryColor,
+                              onPressed: () => viewModel.book(),
+                              child: const Text("Proceed to Payment",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16)),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                     if (viewModel.event.coupleEntry.isNotEmpty)
                       _passType(context, "Couple Pass", viewModel),
                     if (viewModel.event.stagMaleEntry.isNotEmpty &&
@@ -101,7 +199,6 @@ class BookPass extends StatelessWidget {
                       _passType(context, "Female Stag Pass", viewModel),
                     if (viewModel.event.tableOption.isNotEmpty)
                       _passType(context, "Book Table", viewModel),
-                    const SizedBox(height: 50),
                     if (viewModel.event.remainingPasses > 0)
                       Padding(
                         padding: const EdgeInsets.all(8),
@@ -232,9 +329,6 @@ class BookPass extends StatelessWidget {
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => viewModel.book(),
-            ),
           ),
         );
       },
@@ -294,7 +388,8 @@ class BookPass extends StatelessWidget {
               children: List.generate(
                 viewModel.passes.length,
                 (index) => Dismissible(
-                  key: Key(viewModel.passes[index].toString()),
+                  key: Key(viewModel.passes[index].name ??
+                      viewModel.passes[index].maleName.toString()),
                   onDismissed: (direction) {
                     viewModel.totalPrice -= double.parse(
                       viewModel.passes[index].passCost.toString(),
@@ -350,17 +445,19 @@ class BookPass extends StatelessWidget {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Text(
-                                      "Couple's Entry,\n${viewModel.passes[index].passType}",
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
-                                    ),
-                                    Text(
                                       "${viewModel.passes[index].maleName},\tMale, \t${viewModel.passes[index].maleAge}",
-                                      style: const TextStyle(fontSize: 17),
+                                      style: const TextStyle(
+                                          fontSize: 17, color: Colors.white70),
                                     ),
                                     Text(
                                       "${viewModel.passes[index].femaleName},\tFemale ,\t${viewModel.passes[index].femaleAge}",
-                                      style: const TextStyle(fontSize: 17),
+                                      style: const TextStyle(
+                                          fontSize: 17, color: Colors.white70),
+                                    ),
+                                    Text(
+                                      "Couple's Entry,\n${viewModel.passes[index].passType}",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white70),
                                     ),
                                   ],
                                 ),
@@ -407,13 +504,14 @@ class BookPass extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${viewModel.passes[index].entryType!}\n ${viewModel.passes[index].passType}",
+                                      '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
+                                          fontSize: 17, color: Colors.white70),
                                     ),
                                     Text(
-                                      '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
-                                      style: const TextStyle(fontSize: 17),
+                                      "${viewModel.passes[index].entryType!}\n${viewModel.passes[index].passType!}",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white70),
                                     ),
                                   ],
                                 ),
@@ -587,6 +685,12 @@ class BookPass extends StatelessWidget {
         if (value!.isEmpty) {
           viewModel.addError(error: "Please Enter age");
           return "";
+        } else if (int.tryParse(value) is! int) {
+          viewModel.addError(error: "Please Enter valid value");
+          return "";
+        } else if (int.tryParse(value)! > 100 || int.tryParse(value)! < 13) {
+          viewModel.addError(error: "Please Enter age");
+          return "";
         }
         return null;
       },
@@ -597,7 +701,7 @@ class BookPass extends StatelessWidget {
     );
   }
 
-  DropdownButtonFormField<PassType> passTypeDropDown(
+  Widget passTypeDropDown(
     BookPassViewModel viewModel,
   ) {
     return DropdownButtonFormField<PassType>(
@@ -625,11 +729,10 @@ class BookPass extends StatelessWidget {
       items.add(
         DropdownMenuItem(
           value: viewModel.applicablePasses![i],
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: 300,
             child: Text(
               viewModel.getPassType(viewModel.applicablePasses![i]),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
@@ -637,273 +740,4 @@ class BookPass extends StatelessWidget {
     }
     return items;
   }
-
-//   Expanded gender1FormField() {
-//     return Expanded(
-//       child: DropdownButtonFormField<PassType>(
-//         style: TextStyle(color: kSecondaryColor),
-//         value: _gender1,
-//         onChanged: (String value) {
-//           setState(() {
-//             _gender1 = value;
-//           });
-//         },
-//         items: ['Male', 'Female', 'Others']
-//             .map<DropdownMenuItem<String>>((String value) {
-//           return DropdownMenuItem<String>(
-//             value: value,
-//             child: Text(
-//               value,
-//               style: TextStyle(color: kSecondaryColor),
-//             ),
-//           );
-//         }).toList(),
-//         validator: (value) => value == null ? 'Select Gender' : null,
-//         decoration: InputDecoration(
-//           labelText: 'Gender',
-//           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//         ),
-//       ),
-//     );
-//   }
-
-//   TextFormField name2FormField() {
-//     return TextFormField(
-//       style: TextStyle(color: Colors.white70),
-//       keyboardType: TextInputType.name,
-//       cursorColor: Colors.white70,
-//       textInputAction: TextInputAction.go,
-//       onSaved: (newValue) => name2 = newValue,
-//       onChanged: (value) {
-//         if (value.isNotEmpty) {
-//           removeError(error: "Name cannot be empty");
-//         }
-//         return;
-//       },
-//       validator: (value) {
-//         if (value.isEmpty) {
-//           addError(error: "Name cannot be empty");
-//           return "";
-//         }
-//         return null;
-//       },
-//       decoration: InputDecoration(
-//         labelText: "Name",
-//         floatingLabelBehavior: FloatingLabelBehavior.always,
-//       ),
-//     );
-//   }
-
-//   Expanded age2FormField() {
-//     return Expanded(
-//       child: TextFormField(
-//         style: TextStyle(color: Colors.white),
-//         keyboardType: TextInputType.number,
-//         cursorColor: Colors.white70,
-//         textInputAction: TextInputAction.go,
-//         onSaved: (newValue) => age2 = newValue,
-//         onChanged: (value) {
-//           if (value.isNotEmpty) {
-//             removeError(error: "Please Enter age");
-//           }
-//           return;
-//         },
-//         validator: (value) {
-//           if (value.isEmpty) {
-//             addError(error: "Please Enter age");
-//             return "";
-//           }
-//           return null;
-//         },
-//         decoration: InputDecoration(
-//           labelText: "Age",
-//           floatingLabelBehavior: FloatingLabelBehavior.always,
-//         ),
-//       ),
-//     );
-//   }
-
-//   Expanded gender2FormField() {
-//     return Expanded(
-//       child: DropdownButtonFormField<String>(
-//         value: _gender2,
-//         onChanged: (String value) {
-//           setState(() {
-//             _gender2 = value;
-//           });
-//         },
-//         items: ['Female', 'Male', 'Others']
-//             .map<DropdownMenuItem<String>>((String value) {
-//           return DropdownMenuItem<String>(
-//             value: value,
-//             child: Text(
-//               value,
-//               style: TextStyle(color: kSecondaryColor),
-//             ),
-//           );
-//         }).toList(),
-//         validator: (value) => value == null ? 'Select Gender' : null,
-//         decoration: InputDecoration(
-//           labelText: 'Gender',
-//           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//         ),
-//       ),
-//     );
-//   }
-
-//   TextFormField stagNameFormField() {
-//     return TextFormField(
-//       style: TextStyle(color: Colors.white70),
-//       keyboardType: TextInputType.name,
-//       cursorColor: Colors.white70,
-//       textInputAction: TextInputAction.go,
-//       onSaved: (newValue) => stagName = newValue,
-//       onChanged: (value) {
-//         if (value.isNotEmpty) {
-//           removeError(error: "Name cannot be empty");
-//         }
-//         return;
-//       },
-//       validator: (value) {
-//         if (value.isEmpty) {
-//           addError(error: "Name cannot be empty");
-//           return "";
-//         }
-//         return null;
-//       },
-//       decoration: InputDecoration(
-//         labelText: "Name",
-//         floatingLabelBehavior: FloatingLabelBehavior.always,
-//       ),
-//     );
-//   }
-
-//   Expanded stagAgeFormField() {
-//     return Expanded(
-//       child: TextFormField(
-//         style: TextStyle(color: Colors.white),
-//         keyboardType: TextInputType.number,
-//         cursorColor: Colors.white70,
-//         textInputAction: TextInputAction.go,
-//         onSaved: (newValue) => stagAge = newValue,
-//         onChanged: (value) {
-//           if (value.isNotEmpty) {
-//             removeError(error: "Please Enter age");
-//           }
-//           return;
-//         },
-//         validator: (value) {
-//           if (value.isEmpty) {
-//             addError(error: "Please Enter age");
-//             return "";
-//           }
-//           return null;
-//         },
-//         decoration: InputDecoration(
-//           labelText: "Age",
-//           floatingLabelBehavior: FloatingLabelBehavior.always,
-//         ),
-//       ),
-//     );
-//   }
-
-//   Expanded stagGenderFormField() {
-//     return Expanded(
-//       child: DropdownButtonFormField<String>(
-//         value: _stagGender,
-//         onChanged: (String value) {
-//           setState(() {
-//             _stagGender = value;
-//           });
-//         },
-//         items: ['Male', 'Female', 'Others']
-//             .map<DropdownMenuItem<String>>((String value) {
-//           return DropdownMenuItem<String>(
-//             value: value,
-//             child: Text(
-//               value,
-//             ),
-//           );
-//         }).toList(),
-//         validator: (value) => value == null ? 'Select Gender' : null,
-//         decoration: InputDecoration(
-//           labelText: 'Gender',
-//           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class ListofEntryPrices extends StatelessWidget {
-//   const ListofEntryPrices({
-//     Key? key,
-//     @required this.widget,
-//     this.passType,
-//   }) : super(key: key);
-
-//   final Map widget;
-//   final String passType;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Padding(
-//           padding: EdgeInsets.only(
-//             top: 12,
-//           ),
-//           child: Row(
-//             children: [
-//               SvgPicture.asset(
-//                 "assets/icons/Cash.svg",
-//                 height: 12,
-//               ),
-//               const SizedBox(
-//                 width: 5,
-//               ),
-//               Text(
-//                 passType,
-//                 style: TextStyle(fontSize: 17, color: Colors.white70),
-//               ),
-//             ],
-//           ),
-//         ),
-//         Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: widget.entries
-//               .map<Widget>(
-//                 (e) => e.value.toString() == "Not Available"
-//                     ? Container()
-//                     : Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Row(
-//                             children: [
-//                               Text(
-//                                 e.key + " : ",
-//                                 style: TextStyle(fontSize: 16),
-//                               ),
-//                               Text(
-//                                 "₹ " + e.value.toString(),
-//                                 style: TextStyle(fontSize: 16),
-//                               ),
-//                             ],
-//                           ),
-//                           IconButton(
-//                               icon: Icon(
-//                                 Icons.add,
-//                                 color: Colors.white70,
-//                               ),
-//                               onPressed: () {})
-//                         ],
-//                       ),
-//               )
-//               .toList(),
-//         ),
-//       ],
-//     );
-  // }
 }

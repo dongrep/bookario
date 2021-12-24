@@ -37,6 +37,8 @@ class BookingHistoryViewModel extends BaseViewModel {
     if (eventPasses.isNotEmpty) {
       hasBookings = true;
     }
+    eventPasses
+        .sort((EventPass a, EventPass b) => b.timeStamp.compareTo(a.timeStamp));
     setBusy(false);
   }
 }

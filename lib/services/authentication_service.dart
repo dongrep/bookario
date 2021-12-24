@@ -4,6 +4,8 @@ import 'package:bookario/app.locator.dart';
 import 'package:bookario/models/user_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 import 'local_storage_service.dart';
 
@@ -30,6 +32,7 @@ class AuthenticationService {
       _populateCurrentUser(authResult.user);
       return authResult.user;
     } on FirebaseAuthException catch (e) {
+      await locator<DialogService>().showDialog(title: e.message.toString());
       log(e.message.toString());
       return null;
     }
@@ -60,7 +63,8 @@ class AuthenticationService {
 
       return authResult.user != null;
     } on FirebaseAuthException catch (e) {
-      print(e.message);
+      await locator<DialogService>().showDialog(title: e.message.toString());
+      log(e.message.toString());
       return false;
     }
   }

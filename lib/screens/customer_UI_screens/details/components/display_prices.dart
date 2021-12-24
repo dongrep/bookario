@@ -1,3 +1,4 @@
+import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:flutter/material.dart';
@@ -45,57 +46,46 @@ class ListofEntryPrices extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: passes.map<Widget>(
             (PassType pass) {
-              return isTable
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
+              return Card(
+                color: kSecondaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "${pass.type} : ",
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                          Text(
+                            "₹ ${pass.cover + pass.entry}",
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.white),
+                          ),
+                          if (pass.cover > 0.0)
                             Text(
-                              "${pass.type} : ",
+                              " (Cover ₹${pass.cover})",
                               style: const TextStyle(
-                                  fontSize: 16, color: Colors.grey),
+                                  fontSize: 16, color: Colors.white),
                             ),
-                            Text(
-                              "₹ ${pass.cover + pass.entry}",
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.grey),
-                            ),
-                            if (pass.cover > 0.0)
-                              Text(
-                                " (Cover ₹${pass.cover})",
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.grey),
-                              ),
-                          ],
-                        ),
+                        ],
+                      ),
+                      if (isTable)
                         Text(
                           "Admits : ${pass.allowed}",
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white),
                         ),
-                      ],
-                    )
-                  : Row(
-                      children: [
-                        Text(
-                          "${pass.type} : ",
-                          style:
-                              const TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        Text(
-                          "₹ ${pass.cover + pass.entry}",
-                          style:
-                              const TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        if (pass.cover > 0.0)
-                          Text(
-                            " (Cover ₹${pass.cover})",
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.grey),
-                          ),
-                      ],
-                    );
+                    ],
+                  ),
+                ),
+              );
             },
           ).toList(),
         ),

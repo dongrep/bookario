@@ -5,29 +5,43 @@ class EventPass {
   final Timestamp timeStamp;
   final List<Passes>? passes;
   final double total;
-  final String passId;
+  final String? passId;
+  final String eventName;
+  final String eventId;
+  final String? promoterId;
 
   EventPass({
+    required this.eventName,
+    required this.eventId,
     required this.user,
     required this.timeStamp,
     this.passes,
     required this.total,
-    required this.passId,
+    this.passId,
+    this.promoterId,
   });
 
   EventPass.fromJson(Map<String, dynamic> json, this.passId)
       : user = json['user'] as String,
         timeStamp = json['timeStamp'] as Timestamp,
+        eventName = json['eventName'] as String,
+        eventId = json['eventId'] as String,
+        promoterId = json['promoterId'] as String?,
         passes = (json['passes'] as List?)
             ?.map((dynamic e) => Passes.fromJson(e as Map<String, dynamic>))
             .toList(),
-        total = double.parse(json['total'].toString());
+        total = double.parse(
+          json['total'].toString(),
+        );
 
   Map<String, dynamic> toJson() => {
         'user': user,
         'timeStamp': timeStamp,
         'passes': passes?.map((e) => e.toJson()).toList(),
         'total': total,
+        'eventName': eventName,
+        'eventId': eventId,
+        'promoterId': promoterId,
       };
 }
 
@@ -86,6 +100,6 @@ class Passes {
         'passCost': passCost,
         'name': name,
         'age': age,
-        'gender': gender
+        'gender': gender,
       };
 }

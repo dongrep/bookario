@@ -15,7 +15,7 @@ class _ReferAFriendTileState extends State<ReferAFriendTile> {
   Future _generateReferralCode(BuildContext context) async {
     final LocalStorageService _localStorageService =
         locator<LocalStorageService>();
-    var referralCode = await _localStorageService.getter("referralCode");
+    var referralCode = _localStorageService.getter("referralCode");
     if (referralCode == null) {
       referralCode = randomAlphaNumeric(20);
       _localStorageService.setter("referralCode", referralCode.toString());

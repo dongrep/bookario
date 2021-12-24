@@ -1,13 +1,17 @@
 import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
+import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:bookario/services/authentication_service.dart';
 import 'package:bookario/services/firebase_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 enum passTypes { male, female, couple, table }
 
@@ -24,6 +28,7 @@ class BookPassViewModel extends BaseViewModel {
   final List<String> errors = [];
   passTypes? passType;
   double totalPrice = 0.0;
+  double discount = 0.00;
   List<String> dropDownList = [];
 
   Map<String, dynamic> passEntry = {};
@@ -44,6 +49,10 @@ class BookPassViewModel extends BaseViewModel {
 
   int tableCount = 0;
 
+  String? promoterId;
+
+  CouponModel? selectedCoupon;
+
   bool validateAndSave() {
     final FormState? form = bookingFormKey.currentState;
     if (form!.validate()) {
@@ -51,6 +60,16 @@ class BookPassViewModel extends BaseViewModel {
       return true;
     }
     return false;
+  }
+
+  void updateDetails(
+    Event selectedEvent,
+    String? promoterID,
+    CouponModel? coupon,
+  ) {
+    event = selectedEvent;
+    promoterId = promoterID;
+    selectedCoupon = coupon;
   }
 
   void addError({required String error}) {
@@ -103,8 +122,6 @@ class BookPassViewModel extends BaseViewModel {
 
   void updatePassEntrySelectedPass() {
     passEntry['passType'] = getPassType(selectedPass!);
-    totalPrice += selectedPass!.cover + selectedPass!.entry;
-    log(totalPrice.toString());
   }
 
   String getPassType(PassType pass) {
@@ -136,14 +153,31 @@ class BookPassViewModel extends BaseViewModel {
       } else {
         tableCount++;
       }
-      passes.add(Passes.fromJson({
-        "entryType": passEntry['entryType'],
-        "name": passEntry['name'].text,
-        "age": int.parse(passEntry['age'].text as String),
-        "passType": passEntry['passType'],
-        "gender": passEntry['gender'],
-        "passCost": selectedPass!.cover + selectedPass!.entry
-      }));
+      passes.add(
+        Passes.fromJson({
+          "entryType": passEntry['entryType'],
+          "name": passEntry['name'].text,
+          "age": int.parse(passEntry['age'].text as String),
+          "passType": passEntry['passType'],
+          "gender": passEntry['gender'],
+          "passCost": selectedPass!.cover + selectedPass!.entry
+        }),
+      );
+    }
+    totalPrice += selectedPass!.cover + selectedPass!.entry;
+    if (selectedCoupon != null) {
+      if (totalPrice > selectedCoupon!.minAmountRequired) {
+        if (selectedCoupon!.percentOff != null) {
+          discount = selectedCoupon!.percentOff! / 100 * totalPrice;
+
+          discount = discount > selectedCoupon!.maxAmount
+              ? selectedCoupon!.maxAmount
+              : discount;
+        } else {
+          discount = selectedCoupon!.maxAmount;
+        }
+      }
+      totalPrice = totalPrice - discount;
     }
     passEntry = {};
     passType = null;
@@ -155,17 +189,36 @@ class BookPassViewModel extends BaseViewModel {
   Future book() async {
     //Todo: Go to payment page.
     //Todo: Show coupon area.
-    final bool result = await _firebaseService.bookPasses(
-      passes: passes,
-      total: totalPrice,
-      maleCount: maleCount,
-      femaleCount: femaleCount,
-      tableCount: tableCount,
-      event: event,
-      user: _authenticationService.currentUser!,
+
+    final response = await locator<DialogService>().showConfirmationDialog(
+      title: "Confirm booking",
+      description:
+          "Confirm these passes?\nTotal payment is = $totalPrice, \ndiscount applied = $discount",
+      cancelTitle: "No",
+      confirmationTitle: "Confirm",
     );
-    if (result) {
-      //!Naviagte Back to homescreen and show a dialog
+    if (response!.confirmed) {
+      final EventPass eventPass = EventPass(
+        eventName: event.name,
+        eventId: event.id,
+        user: _authenticationService.currentUser!.id!,
+        timeStamp: Timestamp.now(),
+        total: totalPrice,
+        passes: passes,
+        promoterId: promoterId,
+      );
+      final bool result = await _firebaseService.bookPasses(
+        eventPass: eventPass,
+        maleCount: maleCount,
+        femaleCount: femaleCount,
+        tableCount: tableCount,
+        event: event,
+        user: _authenticationService.currentUser!,
+        promoterId: promoterId,
+      );
+      if (result) {
+        locator<NavigationService>().clearStackAndShow(Routes.landingView);
+      }
     }
   }
 
@@ -173,7 +226,7 @@ class BookPassViewModel extends BaseViewModel {
     if (event.femaleRatio > 0 && event.maleRatio > 0) {
       final double requiredRatio = event.femaleRatio / event.maleRatio;
       final double currentRatio = event.totalFemale / event.totalMale;
-      if (currentRatio > requiredRatio) return true;
+      if (currentRatio >= requiredRatio) return true;
     }
     return false;
   }

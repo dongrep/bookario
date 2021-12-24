@@ -13,7 +13,7 @@ class AllEventList extends StatelessWidget {
     return ViewModelBuilder<HomeScreenViewModel>.reactive(
       onModelReady: (viewModel) async {
         await viewModel.getAllEvents();
-        // await viewModel.getAllLocations();
+        await viewModel.getAllLocations();
       },
       builder: (context, viewModel, child) => Column(
         children: [
@@ -64,10 +64,10 @@ class AllEventList extends StatelessWidget {
                   child: Column(
                     children: [
                       ...List.generate(
-                        viewModel.allEvents.length,
+                        viewModel.filteredEvents.length,
                         (index) {
                           return EventCard(
-                            event: viewModel.allEvents[index],
+                            event: viewModel.filteredEvents[index],
                           );
                         },
                       ),
@@ -159,7 +159,10 @@ class AllEventList extends StatelessWidget {
               child: const Text(
                 'Apply',
                 style: TextStyle(
-                    fontSize: 14, letterSpacing: .8, color: Colors.white),
+                  fontSize: 14,
+                  letterSpacing: .8,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -171,10 +174,10 @@ class AllEventList extends StatelessWidget {
   Expanded selectLocation(HomeScreenViewModel viewModel) {
     return Expanded(
       child: DropdownButtonFormField<String>(
-        value: viewModel.location,
+        value: viewModel.selectedLocation,
         style: const TextStyle(color: Colors.white70),
         onChanged: (String? value) {
-          viewModel.location = value!;
+          viewModel.selectedLocation = value;
         },
         items: viewModel.allLocations
             .map<DropdownMenuItem<String>>((String value) {

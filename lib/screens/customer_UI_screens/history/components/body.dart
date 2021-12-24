@@ -1,6 +1,7 @@
 import 'package:bookario/components/loading.dart';
 import 'package:bookario/components/rich_text_row.dart';
 import 'package:bookario/components/size_config.dart';
+import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/screens/customer_UI_screens/history/booking_history_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -28,6 +29,8 @@ class Body extends StatelessWidget {
                               ...List.generate(
                                 viewModel.eventPasses.length,
                                 (index) {
+                                  EventPass currentEventPass =
+                                      viewModel.eventPasses[index];
                                   return Container(
                                     margin: const EdgeInsets.only(bottom: 6),
                                     child: AnimatedCrossFade(
@@ -55,75 +58,9 @@ class Body extends StatelessWidget {
                                                     color:
                                                         const Color(0xFFd6d6d6)
                                                             .withOpacity(0.8),
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        RichText(
-                                                          text: viewModel
-                                                                      .eventPasses[
-                                                                          index]
-                                                                      .passes![
-                                                                          0]
-                                                                      .entryType !=
-                                                                  'Couple Entry'
-                                                              ? TextSpan(
-                                                                  text:
-                                                                      "Entry Type: ${viewModel.eventPasses[index].passes![0].entryType!}\nBooked for:  ${viewModel.eventPasses[index].passes![0].name!}",
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .headline6!
-                                                                      .copyWith(
-                                                                        fontSize:
-                                                                            getProportionateScreenWidth(17),
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                )
-                                                              : TextSpan(
-                                                                  text:
-                                                                      'Entry Type: ${viewModel.eventPasses[index].passes![0].entryType!}\nBooked for: ${viewModel.eventPasses[index].passes![0].femaleName!}',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .headline6!
-                                                                      .copyWith(
-                                                                        fontSize:
-                                                                            getProportionateScreenWidth(17),
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                ),
-                                                        ),
-                                                        RichTextRow(
-                                                          textLeft:
-                                                              "Booked on:  ",
-                                                          textRight: viewModel
-                                                              .eventPasses[
-                                                                  index]
-                                                              .timeStamp
-                                                              .toDate()
-                                                              .toString(),
-                                                        ),
-                                                        RichTextRow(
-                                                          textLeft: "Paid:  ",
-                                                          textRight: viewModel
-                                                              .eventPasses[
-                                                                  index]
-                                                              .total
-                                                              .toString(),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                    child: passTitle(
+                                                        currentEventPass,
+                                                        context),
                                                   ),
                                                 ),
                                               ],
@@ -157,261 +94,11 @@ class Body extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-                                      secondChild: ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: Stack(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 5),
-                                                    color:
-                                                        const Color(0xFFd6d6d6)
-                                                            .withOpacity(0.8),
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        ...List.generate(
-                                                            viewModel
-                                                                .eventPasses[
-                                                                    index]
-                                                                .passes!
-                                                                .length, (j) {
-                                                          return Container(
-                                                            margin:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom: 8),
-                                                            child: Column(
-                                                              children: [
-                                                                Text(
-                                                                  "Entry Type: ${viewModel.eventPasses[index].passes![0].entryType!}",
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .headline6!
-                                                                      .copyWith(
-                                                                        fontSize:
-                                                                            getProportionateScreenWidth(16),
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                ),
-                                                                if (viewModel
-                                                                        .eventPasses[
-                                                                            index]
-                                                                        .passes![
-                                                                            j]
-                                                                        .entryType !=
-                                                                    'Couple Entry')
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        viewModel
-                                                                            .eventPasses[index]
-                                                                            .passes![j]
-                                                                            .name!,
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline6!
-                                                                            .copyWith(
-                                                                              fontSize: getProportionateScreenWidth(16),
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.black,
-                                                                            ),
-                                                                      ),
-                                                                      Text(
-                                                                        ', ${viewModel.eventPasses[index].passes![j].gender!}, ${viewModel.eventPasses[index].passes![j].age!}',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline6!
-                                                                            .copyWith(
-                                                                              fontSize: getProportionateScreenWidth(13),
-                                                                              color: Colors.black,
-                                                                            ),
-                                                                      ),
-                                                                    ],
-                                                                  )
-                                                                else
-                                                                  Column(
-                                                                    children: [
-                                                                      Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            viewModel.eventPasses[index].passes![j].femaleName!,
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(16),
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                          Text(
-                                                                            ', ${viewModel.eventPasses[index].passes![j].femaleGender!}',
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(13),
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                          Text(
-                                                                            ', ${viewModel.eventPasses[index].passes![j].femaleAge!}',
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(13),
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            viewModel.eventPasses[index].passes![j].maleName!,
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(16),
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                          Text(
-                                                                            ', ${viewModel.eventPasses[index].passes![j].maleGender!}',
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(13),
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                          Text(
-                                                                            ', ${viewModel.eventPasses[index].passes![j].maleAge!}',
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(
-                                                                                  fontSize: getProportionateScreenWidth(13),
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                Align(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .centerLeft,
-                                                                  child: Text(
-                                                                    "Pass Type: ${viewModel.eventPasses[index].passes![j].passType!}",
-                                                                    style: Theme.of(
-                                                                            context)
-                                                                        .textTheme
-                                                                        .headline6!
-                                                                        .copyWith(
-                                                                          fontSize:
-                                                                              getProportionateScreenWidth(13),
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          );
-                                                        }),
-                                                        const SizedBox(
-                                                            height: 10),
-                                                        RichTextRow(
-                                                          textLeft:
-                                                              "Booked on:  ",
-                                                          textRight: viewModel
-                                                              .eventPasses[
-                                                                  index]
-                                                              .timeStamp
-                                                              .toDate()
-                                                              .toString(),
-                                                        ),
-                                                        RichTextRow(
-                                                          textLeft: "Paid:  ₹",
-                                                          textRight: viewModel
-                                                              .eventPasses[
-                                                                  index]
-                                                              .total
-                                                              .toString(),
-                                                        ),
-                                                        Container(
-                                                          height: 200,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 10),
-                                                          width: SizeConfig
-                                                              .screenWidth,
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              QrImage(
-                                                                data: viewModel
-                                                                    .eventPasses[
-                                                                        index]
-                                                                    .passId,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                errorStateBuilder:
-                                                                    (cxt, err) {
-                                                                  return const Center(
-                                                                    child: Text(
-                                                                      "Uh oh! Something went wrong...",
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  viewModel
-                                                      .updateIsExpanded(index);
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 5.0),
-                                                  child: Icon(
-                                                    viewModel.isExpanded[index]
-                                                        ? Icons.arrow_drop_up
-                                                        : Icons.arrow_drop_down,
-                                                    size: 30,
-                                                    color: Colors.black
-                                                        .withOpacity(0.6),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      secondChild: eventPassDetails(
+                                          currentEventPass,
+                                          context,
+                                          viewModel,
+                                          index),
                                     ),
                                   );
                                 },
@@ -420,24 +107,6 @@ class Body extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // loadMore
-                        //     ? loadingMore
-                        //         ? Loading()
-                        //         : MaterialButton(
-                        //             onPressed: () {
-                        //               setState(() {
-                        //                 offset += limit;
-                        //                 loadingMore = true;
-                        //               });
-                        //               getviewModel.eventPasses();
-                        //             },
-                        //             splashColor:
-                        //                 Theme.of(context).primaryColorLight,
-                        //             child: Text(
-                        //               'load more',
-                        //             ),
-                        //           )
-                        //     : Container(),
                       ],
                     )
                   else
@@ -457,6 +126,256 @@ class Body extends StatelessWidget {
         );
       },
       viewModelBuilder: () => BookingHistoryViewModel(),
+    );
+  }
+
+  ClipRRect eventPassDetails(EventPass currentEventPass, BuildContext context,
+      BookingHistoryViewModel viewModel, int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: Stack(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  color: const Color(0xFFd6d6d6).withOpacity(0.8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...passesList(currentEventPass, context),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        color: Colors.white,
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichTextRow(
+                              textLeft: "PromoterID: ",
+                              textRight: currentEventPass.promoterId ?? "N/A",
+                            ),
+                            RichTextRow(
+                              textLeft: "Event Name: ",
+                              textRight: currentEventPass.eventName,
+                            ),
+                            RichTextRow(
+                              textLeft: "Booked on: ",
+                              textRight: currentEventPass.timeStamp
+                                  .toDate()
+                                  .toString(),
+                            ),
+                            RichTextRow(
+                              textLeft: "Paid: ₹",
+                              textRight: currentEventPass.total.toString(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 200,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        width: SizeConfig.screenWidth,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            QrImage(
+                              data: viewModel.eventPasses[index].passId!,
+                              backgroundColor: Colors.white,
+                              errorStateBuilder: (cxt, err) {
+                                return const Center(
+                                  child: Text(
+                                    "Uh oh! Something went wrong...",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: GestureDetector(
+              onTap: () {
+                viewModel.updateIsExpanded(index);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5.0),
+                child: Icon(
+                  viewModel.isExpanded[index]
+                      ? Icons.arrow_drop_up
+                      : Icons.arrow_drop_down,
+                  size: 30,
+                  color: Colors.black.withOpacity(0.6),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> passesList(EventPass currentEventPass, BuildContext context) {
+    return List.generate(currentEventPass.passes!.length, (innerIndex) {
+      final Passes currentPass = currentEventPass.passes![innerIndex];
+      return getPassDetails(
+        context,
+        currentPass,
+      );
+    });
+  }
+
+  Column passTitle(EventPass currentEventPass, BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        entryTypeAndName(currentEventPass.passes!.length,
+            currentEventPass.eventName, context),
+        RichTextRow(
+          textLeft: "Booked on:  ",
+          textRight: currentEventPass.timeStamp.toDate().toString(),
+        ),
+        RichTextRow(
+          textLeft: "Paid:  ",
+          textRight: currentEventPass.total.toString(),
+        )
+      ],
+    );
+  }
+
+  Container getPassDetails(BuildContext context, Passes pass) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Entry Type: ${pass.entryType!}",
+            style: Theme.of(context).textTheme.headline6!.copyWith(
+                  fontSize: getProportionateScreenWidth(16),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+          ),
+          if (pass.entryType != 'Couple Entry')
+            Row(
+              children: [
+                Text(
+                  pass.name!,
+                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontSize: getProportionateScreenWidth(16),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                ),
+                Text(
+                  ', ${pass.gender!}, ${pass.age!}',
+                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontSize: getProportionateScreenWidth(13),
+                        color: Colors.black,
+                      ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      pass.femaleName!,
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(16),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      ', ${pass.femaleGender!}',
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(13),
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      ', ${pass.femaleAge!}',
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(13),
+                            color: Colors.black,
+                          ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      pass.maleName!,
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(16),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      ', ${pass.maleGender!}',
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(13),
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      ', ${pass.maleAge!}',
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontSize: getProportionateScreenWidth(13),
+                            color: Colors.black,
+                          ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Pass Type: ${pass.passType ?? "Regular"}",
+              style: Theme.of(context).textTheme.headline6!.copyWith(
+                    fontSize: getProportionateScreenWidth(13),
+                    color: Colors.black,
+                  ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  RichText entryTypeAndName(
+      int noOfPass, String eventName, BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: "No of passes: $noOfPass\nBooked for:  $eventName",
+        style: Theme.of(context).textTheme.headline6!.copyWith(
+              fontSize: getProportionateScreenWidth(17),
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+      ),
     );
   }
 }

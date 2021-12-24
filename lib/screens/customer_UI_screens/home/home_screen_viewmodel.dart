@@ -1,19 +1,17 @@
 import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
-import 'package:bookario/components/networking.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 
 class HomeScreenViewModel extends BaseViewModel {
-  final NavigationService _navigationService = locator<NavigationService>();
   final FirebaseService _firebaseService = locator<FirebaseService>();
 
   int offset = 0;
   int limit = 10;
   List<Event> allEvents = [];
+  List<Event> filteredEvents = [];
   List locations = [];
   List<String> allLocations = [];
   bool hasEvents = false;
@@ -21,7 +19,7 @@ class HomeScreenViewModel extends BaseViewModel {
   bool loadMore = false;
   bool loadingMore = false;
   bool filterApplied = false;
-  String location = 'Magarpatta';
+  String? selectedLocation;
 
   Future getAllEvents() async {
     try {
@@ -31,6 +29,7 @@ class HomeScreenViewModel extends BaseViewModel {
       if (allEvents.isNotEmpty) {
         hasEvents = true;
       }
+      filteredEvents = allEvents;
       setBusy(false);
       notifyListeners();
     } catch (e) {
@@ -43,57 +42,21 @@ class HomeScreenViewModel extends BaseViewModel {
   //   allLocations.add(uniqueLocation['location']);
   // }
 
-  getAllLocations() async {
+  Future<void> getAllLocations() async {
     try {
-      // final response =
-      //     await Networking.getData('events/get-unique-locations', {});
-      // if (response['data'].length > 0) {
-      //   hasEvents = true;
-      //   loadMore = true;
-      //   loadingMore = false;
-      //   locations = response['data'];
-      //   for (int i = 0; i < locations.length; i++) {
-      //     addLocation(locations[i]);
-      //   }
-      // } else {
-      //   homeLoading = false;
-      //   loadMore = false;
-      // }
+      allLocations = await _firebaseService.getAllLocations();
       setBusy(false);
     } catch (e) {
       setBusy(false);
-      print(e);
+      log(e.toString());
     }
   }
 
-  getEventsByLocation() async {
-    hasEvents = false;
+  void getEventsByLocation() {
+    filteredEvents = allEvents
+        .where((element) => element.location == selectedLocation)
+        .toList();
 
-    try {
-      // final response = await Networking.getData('events/get-event-by-location', {
-      //   "location": location,
-      //   "limit": limit.toString(),
-      //   "offset": offset.toString(),
-      // });
-      // if (response['data'].length > 0) {
-      //   if (!filterApplied) {
-      //     filterApplied = true;
-      //     hasEvents = true;
-      //     loadMore = true;
-      //     loadingMore = false;
-      //     eventData = response['data'];
-      //   } else {
-      //     hasEvents = true;
-      //     loadMore = true;
-      //     loadingMore = false;
-      //     eventData += response['data'];
-      //   }
-      // } else {
-      //   hasEvents = true;
-      //   loadMore = false;
-      // }
-    } catch (e) {
-      print(e);
-    }
+    notifyListeners();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/user_model.dart';
@@ -9,12 +10,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseService {
   final CollectionReference _usersCollectionReference =
       FirebaseFirestore.instance.collection('users');
+  final CollectionReference _clubsCollectionReference =
+      FirebaseFirestore.instance.collection('clubs');
   final CollectionReference _eventsCollectionReference =
       FirebaseFirestore.instance.collection('events');
   final CollectionReference _passesCollectionReference =
       FirebaseFirestore.instance.collection('passes');
   final CollectionReference _promotersCollectionReference =
       FirebaseFirestore.instance.collection('promoters');
+  final CollectionReference _locationCollectionReference =
+      FirebaseFirestore.instance.collection('locations');
   Future updateUser(
     UserModel user,
   ) async {
@@ -61,23 +66,23 @@ class FirebaseService {
   }
 
   Future<List<Event>> getEvents() async {
-    try {
-      final List<Event> _events = [];
-      final QuerySnapshot result = await _eventsCollectionReference.get();
-      final List<QueryDocumentSnapshot> allEventsData = result.docs;
-      for (int i = 0; i < allEventsData.length; i++) {
-        _events.add(
-          Event.fromJson(
-            allEventsData[i].data()! as Map<String, dynamic>,
-            allEventsData[i].id,
-          ),
-        );
-      }
-      return _events;
-    } catch (e) {
-      log(e.toString());
-      return <Event>[];
+    // try {
+    final List<Event> _events = [];
+    final QuerySnapshot result = await _eventsCollectionReference.get();
+    final List<QueryDocumentSnapshot> allEventsData = result.docs;
+    for (int i = 0; i < allEventsData.length; i++) {
+      _events.add(
+        Event.fromJson(
+          allEventsData[i].data()! as Map<String, dynamic>,
+          allEventsData[i].id,
+        ),
+      );
     }
+    return _events;
+    // } catch (e) {
+    //   log(e.toString());
+    //   return <Event>[];
+    // }
   }
 
   Future<List<EventPass>> getPasses(String userId) async {
@@ -98,53 +103,78 @@ class FirebaseService {
     }
   }
 
-  Future<bool> bookPasses(
-      {required List<Passes> passes,
-      required int maleCount,
-      required int femaleCount,
-      required int tableCount,
-      required Event event,
-      required UserModel user,
-      required double total}) async {
-    try {
-      Map<String, dynamic> data;
-      data = {
-        "user": user.id!,
-        "total": total,
-        "passes": passes
-            .map((e) => e.toJson()..removeWhere((key, value) => value == null))
-            .toList(),
-        "timeStamp": DateTime.now()
-      };
-      final docRef = _passesCollectionReference.doc();
-      await docRef.set(data);
+  Future<bool> bookPasses({
+    required EventPass eventPass,
+    required int maleCount,
+    required int femaleCount,
+    required int tableCount,
+    required Event event,
+    required UserModel user,
+    String? promoterId,
+  }) async {
+    // try {
 
-      //* Add pass to user profile
-      data = {
-        "bookedPasses": [...user.bookedPasses ?? [], docRef.id]
-      };
-      await _usersCollectionReference.doc(user.id).set(
-            data,
-            SetOptions(merge: true),
-          );
+    final docRef = _passesCollectionReference.doc();
+    await docRef.set(eventPass.toJson());
 
-      //* Add pass to event details
-      data = {
-        "bookedPasses": [...event.bookedPasses ?? [], docRef.id],
-        "remainingPasses": event.remainingPasses - passes.length,
-        "totalMale": event.totalMale + maleCount,
-        "totalFemale": event.totalFemale + femaleCount,
-        "totalTable": event.totalTable + tableCount,
-      };
-      await _eventsCollectionReference.doc(event.id).set(
-            data,
-            SetOptions(merge: true),
-          );
+    //* Add pass to user profile
+    Map<String, dynamic> data = {
+      "bookedPasses": [...user.bookedPasses ?? [], docRef.id]
+    };
+    await _usersCollectionReference.doc(user.id).set(
+          data,
+          SetOptions(merge: true),
+        );
 
-      return true;
-    } catch (e) {
-      log(e.toString());
-      return false;
+    //* Add pass to event details
+    data = {
+      "bookedPasses": [...event.bookedPasses ?? [], docRef.id],
+      "remainingPasses": event.remainingPasses - eventPass.passes!.length,
+      "totalMale": event.totalMale + maleCount,
+      "totalFemale": event.totalFemale + femaleCount,
+      "totalTable": event.totalTable + tableCount,
+      "passesBookedByPromoter": [
+        {promoterId: maleCount + femaleCount + tableCount}
+      ],
+    };
+    await _eventsCollectionReference.doc(event.id).set(
+          data,
+          SetOptions(merge: true),
+        );
+
+    return true;
+    // } catch (e) {
+    //   log(e.toString());
+    //   return false;
+    // }
+  }
+
+  Future<List<CouponModel>> getCouponsForEvent({String? eventId}) async {
+    final List<CouponModel> coupons = [];
+    final response = await _eventsCollectionReference
+        .doc(eventId)
+        .collection("coupons")
+        .get();
+    for (final doc in response.docs) {
+      coupons.add(CouponModel.fromJson(doc.data()));
     }
+    return coupons;
+  }
+
+  Future<List<String>> getAllLocations() async {
+    final List<String> locations = [];
+    final response = await _locationCollectionReference.get();
+    final list = response.docs.first.data()! as Map<String, dynamic>;
+    for (final loc in list["location"]) {
+      locations.add(loc.toString());
+    }
+    return locations;
+  }
+
+  Future<String> getClubName(String clubId) async {
+    final response = await _clubsCollectionReference.doc(clubId).get();
+    final String clubName =
+        (response.data()! as Map<String, dynamic>)['name'].toString();
+    return clubName;
   }
 }

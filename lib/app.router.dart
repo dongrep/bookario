@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
 
+import 'models/coupon_model.dart';
 import 'models/event_model.dart';
 import 'screens/customer_UI_screens/bookings/book_pass.dart';
 import 'screens/customer_UI_screens/details/details_screen.dart';
@@ -121,6 +122,8 @@ class StackedRouter extends RouterBase {
         builder: (context) => BookPass(
           key: args.key,
           event: args.event,
+          promoterId: args.promoterId,
+          coupon: args.coupon,
         ),
         settings: data,
       );
@@ -165,7 +168,10 @@ class DetailsScreenArguments {
 class BookPassArguments {
   final Key? key;
   final Event event;
-  BookPassArguments({this.key, required this.event});
+  final String? promoterId;
+  final CouponModel? coupon;
+  BookPassArguments(
+      {this.key, required this.event, this.promoterId, this.coupon});
 }
 
 /// BookingHistory arguments holder class

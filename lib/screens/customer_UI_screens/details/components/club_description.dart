@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:bookario/components/constants.dart';
+import 'package:bookario/components/size_config.dart';
+import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
+import 'package:bookario/screens/customer_UI_screens/details/details_screen_viewmodel.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../../components/size_config.dart';
 import 'all_prices.dart';
 import 'description_text.dart';
 
@@ -13,9 +17,11 @@ class EventDescription extends StatelessWidget {
   EventDescription({
     Key? key,
     required this.event,
+    required this.viewModel,
   }) : super(key: key);
 
   final Event event;
+  final DetailsScreenViewModel viewModel;
 
   String getTimeOfEvent(Timestamp dateTime) {
     final DateTime temp =
@@ -110,11 +116,49 @@ class EventDescription extends StatelessWidget {
               promoterPopUp(context);
             },
             child: const Text(
-              "Are you a promoter?",
+              "Have a promoter code?",
               style: TextStyle(color: Colors.white70),
             ),
           ),
-        )
+        ),
+        if (viewModel.promoterIdValid)
+          SizedBox(
+            width: SizeConfig.screenWidth,
+            child: Column(
+              children: [
+                if (viewModel.couponsForEvent.isNotEmpty) ...[
+                  const Text(
+                    "Coupons for this event: ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Column(
+                    children: viewModel.couponsForEvent
+                        .map(
+                          (coupon) => InkWell(
+                            onTap: () => viewModel.updateSelectedCoupon(coupon),
+                            child: ListTile(
+                              title: Card(
+                                color: kSecondaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: getCouponDetails(coupon),
+                                ),
+                              ),
+                              trailing: viewModel.selectedCoupon == coupon
+                                  ? const Icon(Icons.check, color: Colors.white)
+                                  : null,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+              ],
+            ),
+          )
       ],
     );
   }
@@ -131,7 +175,7 @@ class EventDescription extends StatelessWidget {
             ),
           ),
           title: Text(
-            "Enter your Promoter ID:",
+            "Enter Promoter ID:",
             style: Theme.of(context)
                 .textTheme
                 .headline6!
@@ -142,24 +186,11 @@ class EventDescription extends StatelessWidget {
             MaterialButton(
               onPressed: () async {
                 try {
-                  // if (promoterCode.text.isNotEmpty) {
-                  //   final response = await Networking.getData(
-                  //       'promoters/get-promoter-coupon', {
-                  //     'clubId': widget.clubData['clubId'].toString(),
-                  //     'eventId': event['eventId'].toString(),
-                  //     'promoterId': promoterCode.text.trim(),
-                  //   });
-                  //   if (response['success']) {
-                  //     promoterCode.clear();
-                  //     Navigator.pop(context);
-                  //     showCoupons(context, response['data']);
-                  //   } else {
-                  //     Navigator.pop(context);
-                  //     promoterError(context, response['message']);
-                  //   }
-                  // }
+                  if (event.promoters!.contains(viewModel.promoterId.text)) {
+                    viewModel.updatePromoterIdValid(value: true);
+                  }
                 } catch (e) {
-                  print(e);
+                  log(e.toString());
                 }
               },
               splashColor: Colors.red[50],
@@ -269,11 +300,43 @@ class EventDescription extends StatelessWidget {
       keyboardType: TextInputType.text,
       cursorColor: Colors.white70,
       textInputAction: TextInputAction.done,
-      controller: promoterCode,
+      controller: viewModel.promoterId,
       decoration: const InputDecoration(
         labelText: "Promoter ID",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
+    );
+  }
+
+  Text whiteTextField18(String text) {
+    return Text(text,
+        style: const TextStyle(color: Colors.white, fontSize: 18));
+  }
+
+  Text whiteTextField(String text) {
+    return Text(text,
+        style: const TextStyle(color: Colors.white, fontSize: 12));
+  }
+
+  Column getCouponDetails(CouponModel coupon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (coupon.percentOff != null) ...[
+          whiteTextField18("Coupon type: Percent"),
+          whiteTextField(
+              "Percent off: ${coupon.percentOff}%, Max discount: Rs.${coupon.maxAmount},"),
+          whiteTextField(
+            "Min amount required: Rs.${coupon.minAmountRequired}",
+          ),
+        ] else ...[
+          whiteTextField18("Coupon type: Flat off"),
+          whiteTextField("Max discount: Rs.${coupon.maxAmount},"),
+          whiteTextField(
+            "Min amount required: Rs.${coupon.minAmountRequired}",
+          ),
+        ]
+      ],
     );
   }
 }
