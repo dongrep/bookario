@@ -39,12 +39,12 @@ final otpInputDecoration = InputDecoration(
 OutlineInputBorder outlineInputBorder() {
   return OutlineInputBorder(
     borderRadius: BorderRadius.circular(getProportionateScreenWidth(15)),
-    borderSide: BorderSide(color: kTextColor),
+    borderSide: const BorderSide(color: kTextColor),
   );
 }
 
 Divider divider() {
-  return Divider(
+  return const Divider(
     color: Colors.white70,
     height: 1,
   );
