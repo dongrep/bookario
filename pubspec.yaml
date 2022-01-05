@@ -45,11 +45,18 @@ dependencies:
   # Architecture
   stacked: ^2.1.0
   stacked_services: ^0.8.15
+  flutter_launcher_icons: ^0.9.2
 
   # Lint
   lint: ^1.7.2
 
   cupertino_icons: ^1.0.3
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/onlylogo.png"
+
 dev_dependencies:
   build_runner:
   flutter_test:

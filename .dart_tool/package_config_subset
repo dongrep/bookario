@@ -10,6 +10,10 @@ analyzer
 2.14
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.7.0/
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-2.7.0/lib/
+archive
+2.12
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/archive-3.1.6/
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/archive-3.1.6/lib/
 args
 2.12
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/args-2.3.0/
@@ -170,6 +174,10 @@ flutter_email_sender
 2.12
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_email_sender-5.0.2/
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_email_sender-5.0.2/lib/
+flutter_launcher_icons
+2.12
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.9.2/
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.9.2/lib/
 flutter_plugin_android_lifecycle
 2.12
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.4/
@@ -218,6 +226,10 @@ http_parser
 2.12
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0/
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0/lib/
+image
+2.12
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/image-3.1.0/
+file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/image-3.1.0/lib/
 image_picker
 2.14
 file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.8.4+3/

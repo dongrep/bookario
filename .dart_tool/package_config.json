@@ -14,6 +14,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "archive",
+      "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/archive-3.1.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "args",
       "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/args-2.3.0",
       "packageUri": "lib/",
@@ -260,6 +266,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_launcher_icons",
+      "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.9.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_plugin_android_lifecycle",
       "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.4",
       "packageUri": "lib/",
@@ -340,6 +352,12 @@
     {
       "name": "http_parser",
       "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "image",
+      "rootUri": "file:///Users/piyushdongre/Documents/Flutter%20Projects/flutter/.pub-cache/hosted/pub.dartlang.org/image-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -734,7 +752,7 @@
       "languageVersion": "2.14"
     }
   ],
-  "generated": "2021-12-16T14:46:40.987517Z",
+  "generated": "2021-12-25T08:35:30.332490Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }
