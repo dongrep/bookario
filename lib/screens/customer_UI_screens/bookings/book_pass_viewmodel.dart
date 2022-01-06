@@ -35,7 +35,7 @@ class BookPassViewModel extends BaseViewModel {
 
   List<Passes> passes = [];
 
-  late Event event;
+  late EventModel event;
 
   PassType? selectedPass;
 
@@ -63,7 +63,7 @@ class BookPassViewModel extends BaseViewModel {
   }
 
   void updateDetails(
-    Event selectedEvent,
+    EventModel selectedEvent,
     String? promoterID,
     CouponModel? coupon,
   ) {
@@ -190,35 +190,43 @@ class BookPassViewModel extends BaseViewModel {
     //Todo: Go to payment page.
     //Todo: Show coupon area.
 
-    final response = await locator<DialogService>().showConfirmationDialog(
-      title: "Confirm booking",
-      description:
-          "Confirm these passes?\nTotal payment is = $totalPrice, \ndiscount applied = $discount",
-      cancelTitle: "No",
-      confirmationTitle: "Confirm",
-    );
-    if (response!.confirmed) {
-      final EventPass eventPass = EventPass(
-        eventName: event.name,
-        eventId: event.id,
-        user: _authenticationService.currentUser!.id!,
-        timeStamp: Timestamp.now(),
-        total: totalPrice,
-        passes: passes,
-        promoterId: promoterId,
+    if (passes.isNotEmpty) {
+      final response = await locator<DialogService>().showConfirmationDialog(
+        title: "Confirm booking",
+        description:
+            "Confirm these passes?\nTotal payment is = $totalPrice, \ndiscount applied = $discount",
+        cancelTitle: "No",
+        confirmationTitle: "Confirm",
       );
-      final bool result = await _firebaseService.bookPasses(
-        eventPass: eventPass,
-        maleCount: maleCount,
-        femaleCount: femaleCount,
-        tableCount: tableCount,
-        event: event,
-        user: _authenticationService.currentUser!,
-        promoterId: promoterId,
-      );
-      if (result) {
-        locator<NavigationService>().clearStackAndShow(Routes.landingView);
+      if (response!.confirmed) {
+        final EventPass eventPass = EventPass(
+          eventName: event.name,
+          eventId: event.id,
+          user: _authenticationService.currentUser!.id!,
+          timeStamp: Timestamp.now(),
+          total: totalPrice,
+          passes: passes,
+          promoterId: promoterId,
+        );
+        final bool result = await _firebaseService.bookPasses(
+          eventPass: eventPass,
+          maleCount: maleCount,
+          femaleCount: femaleCount,
+          tableCount: tableCount,
+          event: event,
+          user: _authenticationService.currentUser!,
+          promoterId: promoterId,
+          coupon: selectedCoupon,
+        );
+        if (result) {
+          locator<NavigationService>().back(result: true);
+        }
       }
+    } else {
+      locator<DialogService>().showDialog(
+        title: "Error",
+        description: "Add at least one pass to proceed!",
+      );
     }
   }
 
@@ -228,6 +236,6 @@ class BookPassViewModel extends BaseViewModel {
       final double currentRatio = event.totalFemale / event.totalMale;
       if (currentRatio >= requiredRatio) return true;
     }
-    return false;
+    return true;
   }
 }

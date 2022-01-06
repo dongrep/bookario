@@ -36,7 +36,7 @@ class ListofEntryPrices extends StatelessWidget {
               ),
               Text(
                 passName,
-                style: const TextStyle(fontSize: 17, color: Colors.white38),
+                style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ],
           ),
@@ -53,35 +53,35 @@ class ListofEntryPrices extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            "${pass.type} : ",
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.white),
-                          ),
-                          Text(
-                            "₹ ${pass.cover + pass.entry}",
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.white),
-                          ),
-                          if (pass.cover > 0.0)
-                            Text(
-                              " (Cover ₹${pass.cover})",
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.white),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: Text(
+                                "${pass.type} : ₹ ${pass.entry} ",
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
                             ),
-                        ],
-                      ),
-                      if (isTable)
-                        Text(
-                          "Admits : ${pass.allowed}",
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.white),
+                            Text(
+                              "(Cover ₹${pass.cover})",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.white),
+                            ),
+                            if (isTable)
+                              Text(
+                                "Admits : ${pass.allowed}",
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
@@ -91,5 +91,17 @@ class ListofEntryPrices extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String getPassType() {
+    if (passName.contains("Couple")) {
+      return "coupleEntry";
+    } else if (passName.contains("Male Stag")) {
+      return "stagMaleEntry";
+    } else if (passName.contains("Female")) {
+      return "stagFemaleEntry";
+    } else {
+      return "tableOption";
+    }
   }
 }

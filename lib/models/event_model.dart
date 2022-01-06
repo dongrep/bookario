@@ -1,7 +1,7 @@
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Event {
+class EventModel {
   final String id;
   final String clubId;
   final Timestamp dateTime;
@@ -13,6 +13,7 @@ class Event {
   final int maleRatio;
   final String eventThumbnail;
   final String location;
+  final String completeLocation;
   final List<PassType> stagFemaleEntry;
   final List<PassType> stagMaleEntry;
   final List<PassType> coupleEntry;
@@ -25,7 +26,7 @@ class Event {
 
   final int remainingPasses;
 
-  Event({
+  EventModel({
     required this.id,
     required this.clubId,
     required this.dateTime,
@@ -36,6 +37,7 @@ class Event {
     required this.maleRatio,
     required this.eventThumbnail,
     required this.location,
+    required this.completeLocation,
     required this.stagFemaleEntry,
     required this.stagMaleEntry,
     required this.coupleEntry,
@@ -49,7 +51,7 @@ class Event {
     this.bookedPasses,
   });
 
-  factory Event.fromJson(Map<String, dynamic> json, String id) {
+  factory EventModel.fromJson(Map<String, dynamic> json, String id) {
     final List<PassType> stagFemaleEntry = json['stagFemaleEntry'] != null
         ? List<PassType>.from(
             (json['stagFemaleEntry'] as List).map(
@@ -80,28 +82,29 @@ class Event {
           )
         : [];
 
-    return Event(
-        id: id,
-        clubId: json['clubId'] as String,
-        dateTime: json['dateTime'] as Timestamp,
-        desc: json['desc'] as String,
-        name: json['name'] as String,
-        maxPasses: json['maxPasses'] as int,
-        femaleRatio: json['femaleRatio'] as int,
-        maleRatio: json['maleRatio'] as int,
-        eventThumbnail: json['eventThumbnail'] as String,
-        location: json['location'] as String,
-        stagFemaleEntry: stagFemaleEntry,
-        stagMaleEntry: stagMaleEntry,
-        coupleEntry: coupleEntry,
-        tableOption: tableOption,
-        remainingPasses: json['remainingPasses'] as int,
-        bookedPasses: json['bookedPasses'] as List,
-        maxTables: json['maxTables'] as int?,
-        totalMale: json['totalMale'] as int,
-        totalFemale: json['totalFemale'] as int,
-        totalTable: json['totalTable'] as int,
-        promoters: json['promoters'] as List?);
+    return EventModel(
+      id: id,
+      clubId: json['clubId'] as String,
+      dateTime: json['dateTime'] as Timestamp,
+      desc: json['desc'] as String,
+      name: json['name'] as String,
+      maxPasses: json['maxPasses'] as int,
+      femaleRatio: json['femaleRatio'] as int,
+      maleRatio: json['maleRatio'] as int,
+      eventThumbnail: json['eventThumbnail'] as String,
+      location: json['location'] as String,
+      stagFemaleEntry: stagFemaleEntry,
+      stagMaleEntry: stagMaleEntry,
+      coupleEntry: coupleEntry,
+      tableOption: tableOption,
+      remainingPasses: json['remainingPasses'] as int,
+      bookedPasses: (json['bookedPasses'] as List?) ?? [],
+      totalMale: json['totalMale'] as int,
+      totalFemale: json['totalFemale'] as int,
+      totalTable: json['totalTable'] as int,
+      promoters: (json['promoters'] as List?) ?? [],
+      completeLocation: json['completeLocation'] as String,
+    );
   }
   Map<String, dynamic> toJson() {
     final List<Map<String, dynamic>> stagFemaleEntryJson =
@@ -126,9 +129,13 @@ class Event {
       "stagMaleEntry": stagMaleEntryJson,
       "coupleEntry": coupleEntryJson,
       "tableOption": tableOptionJson,
+      "totalMale": totalMale,
+      "totalFemale": totalFemale,
+      "totalTable": totalTable,
       "bookedPasses": bookedPasses,
       "remainingPasses": remainingPasses,
       "promoters": promoters,
+      "completeLocation": completeLocation,
     };
   }
 }

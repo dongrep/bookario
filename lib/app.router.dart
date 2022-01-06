@@ -160,14 +160,14 @@ class StackedRouter extends RouterBase {
 /// DetailsScreen arguments holder class
 class DetailsScreenArguments {
   final Key? key;
-  final Event event;
+  final EventModel event;
   DetailsScreenArguments({this.key, required this.event});
 }
 
 /// BookPass arguments holder class
 class BookPassArguments {
   final Key? key;
-  final Event event;
+  final EventModel event;
   final String? promoterId;
   final CouponModel? coupon;
   BookPassArguments(

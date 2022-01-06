@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'display_prices.dart';
 
 class AllPrices extends StatelessWidget {
-  final Event event;
+  final EventModel event;
 
   const AllPrices({Key? key, required this.event}) : super(key: key);
 

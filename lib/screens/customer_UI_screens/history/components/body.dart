@@ -42,63 +42,76 @@ class Body extends StatelessWidget {
                                           const Duration(milliseconds: 200),
                                       firstChild: ClipRRect(
                                         borderRadius: BorderRadius.circular(5),
-                                        child: Stack(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 5),
-                                                    color:
-                                                        const Color(0xFFd6d6d6)
-                                                            .withOpacity(0.8),
-                                                    child: passTitle(
-                                                        currentEventPass,
-                                                        context),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            viewModel.updateIsExpanded(index);
+                                          },
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 5),
+                                                      color: const Color(
+                                                              0xFFd6d6d6)
+                                                          .withOpacity(0.8),
+                                                      child: passTitle(
+                                                          currentEventPass,
+                                                          context),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  viewModel.isExpanded[index]
-                                                      ? viewModel.isExpanded[
-                                                          index] = false
-                                                      : viewModel.isExpanded[
-                                                          index] = true;
-                                                  viewModel.notifyListeners();
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 5.0),
-                                                  child: Icon(
+                                                ],
+                                              ),
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                child: GestureDetector(
+                                                  onTap: () {
                                                     viewModel.isExpanded[index]
-                                                        ? Icons.arrow_drop_up
-                                                        : Icons.arrow_drop_down,
-                                                    size: 30,
-                                                    color: Colors.black
-                                                        .withOpacity(0.6),
+                                                        ? viewModel.isExpanded[
+                                                            index] = false
+                                                        : viewModel.isExpanded[
+                                                            index] = true;
+                                                    viewModel.notifyListeners();
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 5.0),
+                                                    child: Icon(
+                                                      viewModel
+                                                              .isExpanded[index]
+                                                          ? Icons.arrow_drop_up
+                                                          : Icons
+                                                              .arrow_drop_down,
+                                                      size: 30,
+                                                      color: Colors.black
+                                                          .withOpacity(0.6),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      secondChild: eventPassDetails(
-                                          currentEventPass,
-                                          context,
-                                          viewModel,
-                                          index),
+                                      secondChild: GestureDetector(
+                                        onTap: () {
+                                          viewModel.updateIsExpanded(index);
+                                        },
+                                        child: eventPassDetails(
+                                            currentEventPass,
+                                            context,
+                                            viewModel,
+                                            index),
+                                      ),
                                     ),
                                   );
                                 },
@@ -207,19 +220,14 @@ class Body extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: GestureDetector(
-              onTap: () {
-                viewModel.updateIsExpanded(index);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5.0),
-                child: Icon(
-                  viewModel.isExpanded[index]
-                      ? Icons.arrow_drop_up
-                      : Icons.arrow_drop_down,
-                  size: 30,
-                  color: Colors.black.withOpacity(0.6),
-                ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 5.0),
+              child: Icon(
+                viewModel.isExpanded[index]
+                    ? Icons.arrow_drop_up
+                    : Icons.arrow_drop_down,
+                size: 30,
+                color: Colors.black.withOpacity(0.6),
               ),
             ),
           ),

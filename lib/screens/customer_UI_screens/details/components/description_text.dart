@@ -38,13 +38,17 @@ class _DescriptionTextWidgetState extends State<DescriptionTextWidget> {
         top: getProportionateScreenWidth(6),
       ),
       child: secondHalf!.isEmpty
-          ? Text(firstHalf!)
+          ? Text(
+              firstHalf!,
+              textAlign: TextAlign.justify,
+              style: const TextStyle(color: Colors.white),
+            )
           : Column(
               children: <Widget>[
                 Text(
                   flag ? ("${firstHalf!}...") : (firstHalf! + secondHalf!),
                   textAlign: TextAlign.justify,
-                  style: const TextStyle(color: Colors.white54),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 InkWell(
                   child: Row(

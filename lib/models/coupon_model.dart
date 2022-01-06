@@ -1,4 +1,5 @@
 class CouponModel {
+  String id;
   double? percentOff;
   double maxAmount;
   double minAmountRequired;
@@ -7,13 +8,14 @@ class CouponModel {
 
   CouponModel({
     this.percentOff,
+    required this.id,
     required this.maxAmount,
     required this.minAmountRequired,
     required this.maxCoupons,
     required this.remainingCoupons,
   });
 
-  CouponModel.fromJson(Map<String, dynamic> json)
+  CouponModel.fromJson(Map<String, dynamic> json, this.id)
       : percentOff = json['percentOff'] as double?,
         maxAmount = json['maxAmount'] as double,
         minAmountRequired = json['minAmountRequired'] as double,

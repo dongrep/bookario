@@ -15,7 +15,7 @@ class EventCard extends StatelessWidget {
     required this.event,
   }) : super(key: key);
 
-  final Event event;
+  final EventModel event;
 
   @override
   Widget build(BuildContext context) {

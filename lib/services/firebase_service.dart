@@ -55,34 +55,36 @@ class FirebaseService {
     }
   }
 
-  Future updatePromoterList(String promoterId, String userId) async {
+  Future updatePromoterList(
+      String promoterId, String userId, String name) async {
     try {
       await _promotersCollectionReference.doc(promoterId).set(
-          {"userId": userId, "promoterId": promoterId},
-          SetOptions(merge: true));
+        {"userId": userId, "promoterId": promoterId, "name": name},
+        SetOptions(merge: true),
+      );
     } catch (e) {
       log("Update Promoter List : $e");
     }
   }
 
-  Future<List<Event>> getEvents() async {
-    // try {
-    final List<Event> _events = [];
-    final QuerySnapshot result = await _eventsCollectionReference.get();
-    final List<QueryDocumentSnapshot> allEventsData = result.docs;
-    for (int i = 0; i < allEventsData.length; i++) {
-      _events.add(
-        Event.fromJson(
-          allEventsData[i].data()! as Map<String, dynamic>,
-          allEventsData[i].id,
-        ),
-      );
+  Future<List<EventModel>> getEvents() async {
+    try {
+      final List<EventModel> _events = [];
+      final QuerySnapshot result = await _eventsCollectionReference.get();
+      final List<QueryDocumentSnapshot> allEventsData = result.docs;
+      for (int i = 0; i < allEventsData.length; i++) {
+        _events.add(
+          EventModel.fromJson(
+            allEventsData[i].data()! as Map<String, dynamic>,
+            allEventsData[i].id,
+          ),
+        );
+      }
+      return _events;
+    } catch (e) {
+      log(e.toString());
+      return <EventModel>[];
     }
-    return _events;
-    // } catch (e) {
-    //   log(e.toString());
-    //   return <Event>[];
-    // }
   }
 
   Future<List<EventPass>> getPasses(String userId) async {
@@ -108,9 +110,10 @@ class FirebaseService {
     required int maleCount,
     required int femaleCount,
     required int tableCount,
-    required Event event,
+    required EventModel event,
     required UserModel user,
     String? promoterId,
+    CouponModel? coupon,
   }) async {
     // try {
 
@@ -133,10 +136,25 @@ class FirebaseService {
       "totalMale": event.totalMale + maleCount,
       "totalFemale": event.totalFemale + femaleCount,
       "totalTable": event.totalTable + tableCount,
-      "passesBookedByPromoter": [
-        {promoterId: maleCount + femaleCount + tableCount}
-      ],
+      // "passesBookedByPromoter": [
+      //   {
+      //     promoterId: {
+      //       "male": maleCount,
+      //       "female": femaleCount,
+      //       "tableCount": tableCount
+      //     }
+      //   }
+      // ],
     };
+    //*Add pass to promoter details
+    if (eventPass.promoterId != null) {
+      addPassDetailsForPromoter(eventPass.promoterId!, event.id, docRef.id);
+    }
+
+    //*update coupons quantity
+    if (coupon != null) {
+      updateCouponQuantity(event.id, coupon.id, coupon.remainingCoupons);
+    }
     await _eventsCollectionReference.doc(event.id).set(
           data,
           SetOptions(merge: true),
@@ -149,6 +167,19 @@ class FirebaseService {
     // }
   }
 
+  Future addPassDetailsForPromoter(
+      String promoterId, String eventId, String passId) async {
+    final response = await _promotersCollectionReference.doc(promoterId).get();
+    List passes = [];
+    if (response.data() != null) {
+      passes = [...(response.data()! as Map<String, dynamic>)[eventId] ?? []];
+    }
+    print(passes);
+    _promotersCollectionReference.doc(promoterId).set({
+      eventId: [...passes, passId]
+    }, SetOptions(merge: true));
+  }
+
   Future<List<CouponModel>> getCouponsForEvent({String? eventId}) async {
     final List<CouponModel> coupons = [];
     final response = await _eventsCollectionReference
@@ -156,7 +187,7 @@ class FirebaseService {
         .collection("coupons")
         .get();
     for (final doc in response.docs) {
-      coupons.add(CouponModel.fromJson(doc.data()));
+      coupons.add(CouponModel.fromJson(doc.data(), doc.id));
     }
     return coupons;
   }
@@ -176,5 +207,23 @@ class FirebaseService {
     final String clubName =
         (response.data()! as Map<String, dynamic>)['name'].toString();
     return clubName;
+  }
+
+  Future<void> updateCouponQuantity(
+      String id, String coupon, int quanity) async {
+    await _eventsCollectionReference
+        .doc(id)
+        .collection("coupons")
+        .doc(coupon)
+        .set({"remainingCoupons": quanity - 1}, SetOptions(merge: true));
+  }
+
+  Future<EventModel> getEvent(String id) async {
+    final result = await _eventsCollectionReference.doc(id).get();
+
+    return EventModel.fromJson(
+      result.data()! as Map<String, dynamic>,
+      result.id,
+    );
   }
 }

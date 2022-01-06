@@ -10,8 +10,8 @@ class HomeScreenViewModel extends BaseViewModel {
 
   int offset = 0;
   int limit = 10;
-  List<Event> allEvents = [];
-  List<Event> filteredEvents = [];
+  List<EventModel> allEvents = [];
+  List<EventModel> filteredEvents = [];
   List locations = [];
   List<String> allLocations = [];
   bool hasEvents = false;
@@ -24,7 +24,7 @@ class HomeScreenViewModel extends BaseViewModel {
   Future getAllEvents() async {
     try {
       setBusy(true);
-      final List<Event> events = await _firebaseService.getEvents();
+      final List<EventModel> events = await _firebaseService.getEvents();
       allEvents.addAll(events);
       if (allEvents.isNotEmpty) {
         hasEvents = true;

@@ -10,7 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stacked/stacked.dart';
 
 class BookPass extends StatelessWidget {
-  final Event event;
+  final EventModel event;
   final String? promoterId;
   final CouponModel? coupon;
   const BookPass({Key? key, required this.event, this.promoterId, this.coupon})
@@ -209,19 +209,32 @@ class BookPass extends StatelessWidget {
                             if (viewModel.passType == passTypes.female)
                               ...passFormWidget(viewModel),
                             if (viewModel.passType == passTypes.couple) ...[
+                              divider(),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               const Center(
                                 child: Text(
                                   "Book Couple Pass",
                                   style: TextStyle(
                                     fontSize: 18,
-                                    color: Colors.white38,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
                               const SizedBox(
+                                height: 10,
+                              ),
+                              divider(),
+                              const SizedBox(
                                 height: 20,
                               ),
-                              const Text("Male Entry"),
+                              const WhiteText(
+                                text: "Male Entry",
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               bookByNameFormField(
                                   viewModel,
                                   viewModel.passEntry['maleName']
@@ -236,7 +249,10 @@ class BookPass extends StatelessWidget {
                               const SizedBox(
                                 height: 20,
                               ),
-                              const Text("Female Entry"),
+                              const WhiteText(text: "Female Entry"),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               bookByNameFormField(
                                   viewModel,
                                   viewModel.passEntry['femaleName']
@@ -498,53 +514,63 @@ class BookPass extends StatelessWidget {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
-                                      style: const TextStyle(
-                                          fontSize: 17, color: Colors.white70),
-                                    ),
-                                    Text(
-                                      "${viewModel.passes[index].entryType!}\n${viewModel.passes[index].passType!}",
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
-                                    ),
-                                  ],
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
+                                        style: const TextStyle(
+                                            fontSize: 17,
+                                            color: Colors.white70),
+                                      ),
+                                      Text(
+                                        "${viewModel.passes[index].entryType!}\n${viewModel.passes[index].passType!}",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white70),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            backgroundColor: Colors.grey[900],
-                                            title: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons.arrow_back,
-                                                  color: Colors.white70,
-                                                  size: 15,
-                                                ),
-                                                Text(
-                                                  ' Swipe left to discard this booking',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                                Flexible(
+                                  flex: 1,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              backgroundColor: Colors.grey[900],
+                                              title: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: const [
+                                                  Icon(
+                                                    Icons.arrow_back,
+                                                    color: Colors.white70,
+                                                    size: 15,
+                                                  ),
+                                                  Text(
+                                                    ' Swipe left to discard this booking',
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 )
                               ],
@@ -739,5 +765,15 @@ class BookPass extends StatelessWidget {
       );
     }
     return items;
+  }
+}
+
+class WhiteText extends StatelessWidget {
+  const WhiteText({Key? key, required this.text}) : super(key: key);
+
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Text(text, style: const TextStyle(color: Colors.white));
   }
 }

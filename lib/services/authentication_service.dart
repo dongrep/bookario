@@ -88,6 +88,11 @@ class AuthenticationService {
     }
   }
 
+  Future refreshUser(String userId) async {
+    _currentUser = await _firebaseService.getUserProfile(userId);
+    _localStorageService.setter("uid", _currentUser!.id!);
+  }
+
   Future<void> resetPassword(String email) async {
     await _firebaseAuth.sendPasswordResetEmail(email: email);
   }

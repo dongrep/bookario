@@ -1,6 +1,6 @@
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/app.router.dart';
-import 'package:bookario/components/default_button.dart';
+import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/hovering_back_button.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/models/event_model.dart';
@@ -12,7 +12,7 @@ import 'package:stacked_services/stacked_services.dart';
 import 'club_description.dart';
 
 class Body extends StatelessWidget {
-  final Event event;
+  final EventModel event;
 
   const Body({Key? key, required this.event}) : super(key: key);
 
@@ -82,7 +82,9 @@ class Body extends StatelessWidget {
                               height: 8,
                             ),
                             EventDescription(
-                                event: event, viewModel: viewModel),
+                              event: event,
+                              viewModel: viewModel,
+                            ),
                             SizedBox(
                               height: getProportionateScreenHeight(20),
                             ),
@@ -96,25 +98,25 @@ class Body extends StatelessWidget {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: SizeConfig.screenWidth * 0.15,
-                      right: SizeConfig.screenWidth * 0.15,
-                      bottom: getProportionateScreenWidth(5),
-                      top: getProportionateScreenWidth(5),
-                    ),
-                    child: DefaultButton(
-                      text: "Get Pass",
-                      press: event.remainingPasses > 0
-                          ? () => {
-                                locator<NavigationService>().navigateTo(
-                                    Routes.bookPass,
-                                    arguments: BookPassArguments(
-                                        event: event,
-                                        promoterId: viewModel.promoterId.text,
-                                        coupon: viewModel.selectedCoupon)),
-                              }
+                  child: Container(
+                    width: double.infinity,
+                    color: kSecondaryColor,
+                    height: 60,
+                    child: InkWell(
+                      onTap: event.remainingPasses > 0
+                          ? () => viewModel.bookPass()
                           : null,
+                      child: Center(
+                        child: Text(
+                          "Book",
+                          style:
+                              Theme.of(context).textTheme.headline6!.copyWith(
+                                    fontSize: getProportionateScreenWidth(16),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

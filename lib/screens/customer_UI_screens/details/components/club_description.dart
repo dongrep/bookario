@@ -20,7 +20,7 @@ class EventDescription extends StatelessWidget {
     required this.viewModel,
   }) : super(key: key);
 
-  final Event event;
+  final EventModel event;
   final DetailsScreenViewModel viewModel;
 
   String getTimeOfEvent(Timestamp dateTime) {
@@ -42,9 +42,10 @@ class EventDescription extends StatelessWidget {
           event.name,
           style: Theme.of(context)
               .textTheme
-              .headline6!
-              .copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+              .headline4!
+              .copyWith(fontWeight: FontWeight.bold, color: kSecondaryColor),
         ),
+        const SpacingWidget(),
         Padding(
           padding: EdgeInsets.symmetric(
             vertical: getProportionateScreenWidth(5),
@@ -62,52 +63,65 @@ class EventDescription extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.only(top: 15),
                   child: SelectableText(
-                    event.location,
-                    maxLines: 2,
-                    style: const TextStyle(color: Colors.white54),
+                    "Where : ${event.completeLocation}\n${event.location}",
+                    maxLines: 5,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ),
             ],
           ),
         ),
+        const SpacingWidget(),
         Row(
           children: [
             SvgPicture.asset(
               "assets/icons/clock.svg",
               height: getProportionateScreenWidth(14),
             ),
-            Text(
-              ' ${getTimeOfEvent(event.dateTime)}',
-              style: const TextStyle(color: Colors.white54),
-            ),
+            TextRow(
+                text1: " What time",
+                text2: " : ${getTimeOfEvent(event.dateTime)}")
           ],
         ),
-        const Padding(
-          padding: EdgeInsets.only(
-            top: 25,
-          ),
-          child: Text(
-            "About the event",
-            style: TextStyle(fontSize: 18, color: Colors.white70),
-          ),
+        const SpacingWidget(),
+        Row(
+          children: [
+            Icon(
+              Icons.calendar_today_rounded,
+              size: getProportionateScreenWidth(14),
+              color: Colors.white,
+            ),
+            TextRow(
+                text1: " On date ",
+                text2: ": ${getDateOfEvent(event.dateTime)}"),
+          ],
+        ),
+        const SpacingWidget(),
+        const Text(
+          "About the event",
+          style: TextStyle(fontSize: 18, color: kSecondaryColor),
         ),
         DescriptionTextWidget(text: event.desc),
-        const Padding(
-          padding: EdgeInsets.only(
-            top: 25,
-          ),
-          child: Text(
-            "Available Passes:",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white70,
-              fontWeight: FontWeight.bold,
-            ),
+        const SpacingWidget(),
+        const Text(
+          "Available Passes : ",
+          style: TextStyle(
+            fontSize: 18,
+            color: kSecondaryColor,
+            fontWeight: FontWeight.bold,
           ),
         ),
         AllPrices(event: event),
-        const SizedBox(height: 20),
+        const SpacingWidget(),
+        const Text(
+          "Enter a promoter code for coupons",
+          style: TextStyle(
+            fontSize: 18,
+            color: kSecondaryColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         SizedBox(
           width: SizeConfig.screenWidth,
           child: MaterialButton(
@@ -136,20 +150,32 @@ class EventDescription extends StatelessWidget {
                         .map(
                           (coupon) => InkWell(
                             onTap: () => viewModel.updateSelectedCoupon(coupon),
-                            child: ListTile(
-                              title: Card(
-                                color: kSecondaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: getCouponDetails(coupon),
+                            child: Card(
+                              color: kSecondaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    getCouponDetails(coupon),
+                                    if (viewModel.selectedCoupon == coupon)
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.black),
+                                        padding: EdgeInsets.all(2),
+                                        child: const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
-                              trailing: viewModel.selectedCoupon == coupon
-                                  ? const Icon(Icons.check, color: Colors.white)
-                                  : null,
                             ),
                           ),
                         )
@@ -188,6 +214,8 @@ class EventDescription extends StatelessWidget {
                 try {
                   if (event.promoters!.contains(viewModel.promoterId.text)) {
                     viewModel.updatePromoterIdValid(value: true);
+                  } else {
+                    viewModel.updatePromoterIdValid(value: false);
                   }
                 } catch (e) {
                   log(e.toString());
@@ -410,6 +438,46 @@ class CouponCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TextRow extends StatelessWidget {
+  const TextRow({Key? key, required this.text1, required this.text2})
+      : super(key: key);
+
+  final String text1;
+  final String text2;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(text1,
+            style: const TextStyle(color: kSecondaryColor, fontSize: 18)),
+        Text(text2, style: const TextStyle(color: kPrimaryColor, fontSize: 18))
+      ],
+    );
+  }
+}
+
+class SpacingWidget extends StatelessWidget {
+  const SpacingWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        divider(),
+        const SizedBox(
+          height: 10,
+        ),
+      ],
     );
   }
 }

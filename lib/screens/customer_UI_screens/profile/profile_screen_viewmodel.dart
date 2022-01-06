@@ -26,9 +26,7 @@ class ProfileScreenViewModel extends BaseViewModel {
   late UserModel user;
 
   Future populateDetails() async {
-    // final uid = await _localStorageService.getter('uid');
     user = _authenticationService.currentUser!;
-    // populateFields();
   }
 
   FocusNode nameFocusNode = FocusNode();
@@ -106,11 +104,16 @@ class ProfileScreenViewModel extends BaseViewModel {
         promoterId: promoterId,
       );
       _firebaseService.updateUser(newUser);
-      _firebaseService.updatePromoterList(promoterId, newUser.id!);
+      _firebaseService.updatePromoterList(
+        promoterId,
+        newUser.id!,
+        newUser.name,
+      );
       await _dialogService.showDialog(
-          title: "Success", description: "Profile Updated!");
-      _navigationService.back(result: true);
-      await _authenticationService.checkUserLoggedIn();
+        title: "Success",
+        description: "Profile Updated!",
+      );
+      await _authenticationService.refreshUser(newUser.id!);
       populateDetails();
       notifyListeners();
     } catch (e) {
