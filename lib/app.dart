@@ -1,4 +1,5 @@
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass.dart';
+import 'package:bookario/screens/customer_UI_screens/confirm_booking/confirm_booking_view.dart';
 import 'package:bookario/screens/customer_UI_screens/details/details_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/history/booking_history.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
@@ -29,6 +30,7 @@ import 'package:stacked_services/stacked_services.dart';
     MaterialRoute(page: HomeScreen, path: "/home"),
     MaterialRoute(page: DetailsScreen, path: "/event-details"),
     MaterialRoute(page: BookPass, path: "/book-pass"),
+    MaterialRoute(page: ConfirmBookingView, path: "/confirm-booking"),
 
     //*Profile Screen flow
     MaterialRoute(page: ProfileScreen, path: "/my-profile"),

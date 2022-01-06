@@ -112,7 +112,6 @@ class FirebaseService {
     required int tableCount,
     required EventModel event,
     required UserModel user,
-    String? promoterId,
     CouponModel? coupon,
   }) async {
     // try {
@@ -147,7 +146,7 @@ class FirebaseService {
       // ],
     };
     //*Add pass to promoter details
-    if (eventPass.promoterId != null) {
+    if (eventPass.promoterId != null || eventPass.promoterId == "") {
       addPassDetailsForPromoter(eventPass.promoterId!, event.id, docRef.id);
     }
 

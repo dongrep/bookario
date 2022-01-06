@@ -1,14 +1,9 @@
-import 'dart:developer';
-
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/app.router.dart';
-import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
-import 'package:bookario/services/authentication_service.dart';
-import 'package:bookario/services/firebase_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bookario/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -16,10 +11,6 @@ import 'package:stacked_services/stacked_services.dart';
 enum passTypes { male, female, couple, table }
 
 class BookPassViewModel extends BaseViewModel {
-  final FirebaseService _firebaseService = locator<FirebaseService>();
-  final AuthenticationService _authenticationService =
-      locator<AuthenticationService>();
-
   final GlobalKey<FormState> bookingFormKey = GlobalKey<FormState>();
   bool booked = false;
   bool addClicked = false;
@@ -49,10 +40,6 @@ class BookPassViewModel extends BaseViewModel {
 
   int tableCount = 0;
 
-  String? promoterId;
-
-  CouponModel? selectedCoupon;
-
   bool validateAndSave() {
     final FormState? form = bookingFormKey.currentState;
     if (form!.validate()) {
@@ -64,12 +51,8 @@ class BookPassViewModel extends BaseViewModel {
 
   void updateDetails(
     EventModel selectedEvent,
-    String? promoterID,
-    CouponModel? coupon,
   ) {
     event = selectedEvent;
-    promoterId = promoterID;
-    selectedCoupon = coupon;
   }
 
   void addError({required String error}) {
@@ -165,20 +148,6 @@ class BookPassViewModel extends BaseViewModel {
       );
     }
     totalPrice += selectedPass!.cover + selectedPass!.entry;
-    if (selectedCoupon != null) {
-      if (totalPrice > selectedCoupon!.minAmountRequired) {
-        if (selectedCoupon!.percentOff != null) {
-          discount = selectedCoupon!.percentOff! / 100 * totalPrice;
-
-          discount = discount > selectedCoupon!.maxAmount
-              ? selectedCoupon!.maxAmount
-              : discount;
-        } else {
-          discount = selectedCoupon!.maxAmount;
-        }
-      }
-      totalPrice = totalPrice - discount;
-    }
     passEntry = {};
     passType = null;
     dropDownList = [];
@@ -191,37 +160,11 @@ class BookPassViewModel extends BaseViewModel {
     //Todo: Show coupon area.
 
     if (passes.isNotEmpty) {
-      final response = await locator<DialogService>().showConfirmationDialog(
-        title: "Confirm booking",
-        description:
-            "Confirm these passes?\nTotal payment is = $totalPrice, \ndiscount applied = $discount",
-        cancelTitle: "No",
-        confirmationTitle: "Confirm",
+      locator<NavigationService>().navigateTo(
+        Routes.confirmBookingView,
+        arguments: ConfirmBookingViewArguments(
+            event: event, passes: passes, totalPrice: totalPrice),
       );
-      if (response!.confirmed) {
-        final EventPass eventPass = EventPass(
-          eventName: event.name,
-          eventId: event.id,
-          user: _authenticationService.currentUser!.id!,
-          timeStamp: Timestamp.now(),
-          total: totalPrice,
-          passes: passes,
-          promoterId: promoterId,
-        );
-        final bool result = await _firebaseService.bookPasses(
-          eventPass: eventPass,
-          maleCount: maleCount,
-          femaleCount: femaleCount,
-          tableCount: tableCount,
-          event: event,
-          user: _authenticationService.currentUser!,
-          promoterId: promoterId,
-          coupon: selectedCoupon,
-        );
-        if (result) {
-          locator<NavigationService>().back(result: true);
-        }
-      }
     } else {
       locator<DialogService>().showDialog(
         title: "Error",

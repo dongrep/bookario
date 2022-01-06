@@ -38,13 +38,9 @@ class HomeScreenViewModel extends BaseViewModel {
     }
   }
 
-  // void addLocation(uniqueLocation) {
-  //   allLocations.add(uniqueLocation['location']);
-  // }
-
   Future<void> getAllLocations() async {
     try {
-      allLocations = await _firebaseService.getAllLocations();
+      allLocations = ["All", ...await _firebaseService.getAllLocations()];
       setBusy(false);
     } catch (e) {
       setBusy(false);
@@ -53,9 +49,13 @@ class HomeScreenViewModel extends BaseViewModel {
   }
 
   void getEventsByLocation() {
-    filteredEvents = allEvents
-        .where((element) => element.location == selectedLocation)
-        .toList();
+    if (selectedLocation != "All") {
+      filteredEvents = allEvents
+          .where((element) => element.location == selectedLocation)
+          .toList();
+    } else {
+      filteredEvents = allEvents;
+    }
 
     notifyListeners();
   }

@@ -10,9 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
 
-import 'models/coupon_model.dart';
 import 'models/event_model.dart';
+import 'models/event_pass_model.dart';
 import 'screens/customer_UI_screens/bookings/book_pass.dart';
+import 'screens/customer_UI_screens/confirm_booking/confirm_booking_view.dart';
 import 'screens/customer_UI_screens/details/details_screen.dart';
 import 'screens/customer_UI_screens/history/booking_history.dart';
 import 'screens/customer_UI_screens/home/home_screen.dart';
@@ -33,6 +34,7 @@ class Routes {
   static const String homeScreen = '/home';
   static const String detailsScreen = '/event-details';
   static const String bookPass = '/book-pass';
+  static const String confirmBookingView = '/confirm-booking';
   static const String profileScreen = '/my-profile';
   static const String editProfile = '/edit-profile';
   static const String bookingHistory = '/booking-history';
@@ -45,6 +47,7 @@ class Routes {
     homeScreen,
     detailsScreen,
     bookPass,
+    confirmBookingView,
     profileScreen,
     editProfile,
     bookingHistory,
@@ -63,6 +66,7 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.homeScreen, page: HomeScreen),
     RouteDef(Routes.detailsScreen, page: DetailsScreen),
     RouteDef(Routes.bookPass, page: BookPass),
+    RouteDef(Routes.confirmBookingView, page: ConfirmBookingView),
     RouteDef(Routes.profileScreen, page: ProfileScreen),
     RouteDef(Routes.editProfile, page: EditProfile),
     RouteDef(Routes.bookingHistory, page: BookingHistory),
@@ -122,8 +126,18 @@ class StackedRouter extends RouterBase {
         builder: (context) => BookPass(
           key: args.key,
           event: args.event,
-          promoterId: args.promoterId,
-          coupon: args.coupon,
+        ),
+        settings: data,
+      );
+    },
+    ConfirmBookingView: (data) {
+      var args = data.getArgs<ConfirmBookingViewArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => ConfirmBookingView(
+          key: args.key,
+          event: args.event,
+          passes: args.passes,
+          totalPrice: args.totalPrice,
         ),
         settings: data,
       );
@@ -168,10 +182,20 @@ class DetailsScreenArguments {
 class BookPassArguments {
   final Key? key;
   final EventModel event;
-  final String? promoterId;
-  final CouponModel? coupon;
-  BookPassArguments(
-      {this.key, required this.event, this.promoterId, this.coupon});
+  BookPassArguments({this.key, required this.event});
+}
+
+/// ConfirmBookingView arguments holder class
+class ConfirmBookingViewArguments {
+  final Key? key;
+  final EventModel event;
+  final List<Passes> passes;
+  final double totalPrice;
+  ConfirmBookingViewArguments(
+      {this.key,
+      required this.event,
+      required this.passes,
+      required this.totalPrice});
 }
 
 /// BookingHistory arguments holder class

@@ -160,11 +160,33 @@ class Body extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        height: 200,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        width: SizeConfig.screenWidth,
+                        child: Center(
+                          child: QrImage(
+                            data: viewModel.eventPasses[index].passId!,
+                            backgroundColor: Colors.white,
+                            errorStateBuilder: (cxt, err) {
+                              return const Center(
+                                child: Text(
+                                  "Uh oh! Something went wrong...",
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                       ...passesList(currentEventPass, context),
                       const SizedBox(height: 10),
                       Container(
                         width: double.infinity,
-                        color: Colors.white,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
                         padding: EdgeInsets.all(8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,28 +208,6 @@ class Body extends StatelessWidget {
                             RichTextRow(
                               textLeft: "Paid: ₹",
                               textRight: currentEventPass.total.toString(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 200,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        width: SizeConfig.screenWidth,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            QrImage(
-                              data: viewModel.eventPasses[index].passId!,
-                              backgroundColor: Colors.white,
-                              errorStateBuilder: (cxt, err) {
-                                return const Center(
-                                  child: Text(
-                                    "Uh oh! Something went wrong...",
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              },
                             ),
                           ],
                         ),
@@ -267,9 +267,12 @@ class Body extends StatelessWidget {
 
   Container getPassDetails(BuildContext context, Passes pass) {
     return Container(
-      color: Colors.white,
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

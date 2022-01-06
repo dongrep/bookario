@@ -56,8 +56,8 @@ class _DescriptionTextWidgetState extends State<DescriptionTextWidget> {
                       Text(
                         flag ? "Read more" : "show less",
                         style: const TextStyle(
-                          color: kSecondaryColor,
-                        ),
+                            color: kSecondaryColor,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

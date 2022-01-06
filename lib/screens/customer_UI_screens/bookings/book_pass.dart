@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:bookario/components/constants.dart';
-import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass_viewmodel.dart';
@@ -11,10 +10,11 @@ import 'package:stacked/stacked.dart';
 
 class BookPass extends StatelessWidget {
   final EventModel event;
-  final String? promoterId;
-  final CouponModel? coupon;
-  const BookPass({Key? key, required this.event, this.promoterId, this.coupon})
-      : super(key: key);
+
+  const BookPass({
+    Key? key,
+    required this.event,
+  }) : super(key: key);
 
   Future confirmDiscard(BuildContext context) {
     return showDialog(
@@ -69,8 +69,9 @@ class BookPass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<BookPassViewModel>.reactive(
-      onModelReady: (viewModel) =>
-          viewModel.updateDetails(event, promoterId, coupon),
+      onModelReady: (viewModel) => viewModel.updateDetails(
+        event,
+      ),
       builder: (context, viewModel, child) {
         return SafeArea(
           child: Scaffold(
@@ -99,96 +100,6 @@ class BookPass extends StatelessWidget {
                     ),
                     const SizedBox(
                       height: 16,
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Booking details:",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline5!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Total Price:",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6!
-                                      .copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                                Text(
-                                  "Rs.${viewModel.totalPrice}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6!
-                                      .copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Total discount:",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6!
-                                      .copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                                Text(
-                                  "Rs.${viewModel.discount}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6!
-                                      .copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            MaterialButton(
-                              minWidth: double.infinity,
-                              elevation: 2,
-                              color: kSecondaryColor,
-                              onPressed: () => viewModel.book(),
-                              child: const Text("Proceed to Payment",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16)),
-                            )
-                          ],
-                        ),
-                      ),
                     ),
                     if (viewModel.event.coupleEntry.isNotEmpty)
                       _passType(context, "Couple Pass", viewModel),
@@ -345,6 +256,11 @@ class BookPass extends StatelessWidget {
                 ),
               ),
             ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => viewModel.book(),
+              backgroundColor: kSecondaryColor,
+              child: const Icon(Icons.arrow_forward_ios_sharp),
+            ),
           ),
         );
       },
@@ -427,7 +343,7 @@ class BookPass extends StatelessWidget {
                     const String action = "discarded";
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("booking $action"),
+                        content: Center(child: Text("Booking $action")),
                       ),
                     );
                   },
@@ -447,7 +363,7 @@ class BookPass extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 2),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white70),
-                      borderRadius: const BorderRadius.all(Radius.circular(3)),
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
                     ),
                     child: ClipRRect(
                       child: (viewModel.passes[index].entryType)!
@@ -777,3 +693,17 @@ class WhiteText extends StatelessWidget {
     return Text(text, style: const TextStyle(color: Colors.white));
   }
 }
+
+
+// const Text(
+        //   "Available Passes : ",
+        //   style: TextStyle(
+        //     fontSize: 18,
+        //     color: kSecondaryColor,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
+        // AllPrices(event: event),
+        // const SpacingWidget(),
+        // 
+        //   )
