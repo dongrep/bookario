@@ -1,4 +1,5 @@
 import 'package:bookario/components/constants.dart';
+import 'package:bookario/components/enum.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/screens/customer_UI_screens/home/components/all_event_list.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen_viewmodel.dart';
@@ -6,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
 class HomeScreen extends StatelessWidget {
+  final EventType eventType;
+
+  const HomeScreen({Key? key, required this.eventType}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeScreenViewModel>.reactive(
         onModelReady: (viewModel) async {
-          await viewModel.getAllEvents();
+          await viewModel.getAllEvents(eventType);
           await viewModel.getAllLocations();
         },
         viewModelBuilder: () => HomeScreenViewModel(),

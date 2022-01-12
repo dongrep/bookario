@@ -116,9 +116,10 @@ class BookPass extends StatelessWidget {
                         child: Column(
                           children: [
                             if (viewModel.passType == passTypes.male)
-                              ...passFormWidget(viewModel, isMale: true),
+                              ...passFormWidget(context, viewModel,
+                                  isMale: true),
                             if (viewModel.passType == passTypes.female)
-                              ...passFormWidget(viewModel),
+                              ...passFormWidget(context, viewModel),
                             if (viewModel.passType == passTypes.couple) ...[
                               divider(),
                               const SizedBox(
@@ -178,7 +179,7 @@ class BookPass extends StatelessWidget {
                               const SizedBox(
                                 height: 20,
                               ),
-                              passTypeDropDown(viewModel),
+                              passTypeDropDown(viewModel, context),
                             ],
                             if (viewModel.passType == passTypes.table) ...[
                               const Center(
@@ -207,7 +208,7 @@ class BookPass extends StatelessWidget {
                               const SizedBox(
                                 height: 20,
                               ),
-                              passTypeDropDown(viewModel),
+                              passTypeDropDown(viewModel, context),
                             ],
                             if (viewModel.passType != null)
                               Row(
@@ -269,6 +270,7 @@ class BookPass extends StatelessWidget {
   }
 
   List<Widget> passFormWidget(
+    BuildContext context,
     BookPassViewModel viewModel, {
     bool isMale = false,
   }) {
@@ -296,7 +298,7 @@ class BookPass extends StatelessWidget {
       const SizedBox(
         height: 20,
       ),
-      passTypeDropDown(viewModel),
+      passTypeDropDown(viewModel, context),
     ];
   }
 
@@ -643,10 +645,9 @@ class BookPass extends StatelessWidget {
     );
   }
 
-  Widget passTypeDropDown(
-    BookPassViewModel viewModel,
-  ) {
+  Widget passTypeDropDown(BookPassViewModel viewModel, BuildContext context) {
     return DropdownButtonFormField<PassType>(
+      onTap: () => FocusScope.of(context).unfocus(),
       value: viewModel.selectedPass,
       dropdownColor: kSecondaryColor,
       style: const TextStyle(color: kPrimaryColor),

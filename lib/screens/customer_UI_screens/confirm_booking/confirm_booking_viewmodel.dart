@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
 import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
@@ -70,50 +71,60 @@ class ConfirmBookingViewModel extends BaseViewModel {
   }
 
   Future book() async {
+    int maleCount = 0;
+    int femaleCount = 0;
+    int tableCount = 0;
+
+    for (final pass in passes) {
+      if (pass.entryType!.contains("Couple")) {
+        maleCount++;
+        femaleCount++;
+      } else if (pass.entryType!.contains("Male")) {
+        maleCount++;
+      } else if (pass.entryType!.contains("Female")) {
+        femaleCount++;
+      } else if (pass.entryType!.contains("Table")) {
+        tableCount++;
+      }
+    }
     final response = await locator<DialogService>().showConfirmationDialog(
       title: "Confirm booking",
       description: "Confirm these passes?",
       cancelTitle: "No",
       confirmationTitle: "Confirm",
     );
-    int maleCount = 0;
-    int femaleCount = 0;
-    int tableCount = 0;
-
-    for (final pass in passes) {
-      if (pass.passType!.contains("Couple")) {
-        maleCount++;
-        femaleCount++;
-      } else if (pass.passType!.contains("Male")) {
-        maleCount++;
-      } else if (pass.passType!.contains("Female")) {
-        femaleCount++;
-      } else if (pass.passType!.contains("Table")) {
-        tableCount++;
-      }
-    }
 
     if (response!.confirmed) {
-      final EventPass eventPass = EventPass(
-        eventName: event.name,
-        eventId: event.id,
-        user: _authenticationService.currentUser!.id!,
-        timeStamp: Timestamp.now(),
-        total: totalPrice - discount,
-        passes: passes,
-        promoterId: promoterId.text == "" ? null : promoterId.text,
-      );
-      final bool result = await _firebaseService.bookPasses(
-        eventPass: eventPass,
-        maleCount: maleCount,
-        femaleCount: femaleCount,
-        tableCount: tableCount,
-        event: event,
-        user: _authenticationService.currentUser!,
-        coupon: selectedCoupon,
-      );
-      if (result) {
-        locator<NavigationService>().back(result: true);
+      var paymentResponse;
+      if (totalPrice - discount != 0) {
+        paymentResponse = await _navigationService.navigateTo(
+            Routes.makePayment,
+            arguments: MakePaymentArguments(
+                type: "Book passes", amount: totalPrice - discount));
+      }
+      if (paymentResponse?[0] == "SUCCESS" || totalPrice - discount == 0) {
+        final EventPass eventPass = EventPass(
+          eventName: event.name,
+          eventId: event.id,
+          user: _authenticationService.currentUser!.id!,
+          timeStamp: Timestamp.now(),
+          total: totalPrice - discount,
+          passes: passes,
+          promoterId: promoterId.text == "" ? null : promoterId.text,
+        );
+        final bool result = await _firebaseService.bookPasses(
+          eventPass: eventPass,
+          maleCount: maleCount,
+          femaleCount: femaleCount,
+          tableCount: tableCount,
+          event: event,
+          user: _authenticationService.currentUser!,
+          transactionId: paymentResponse?[1].toString() ?? "Free",
+          coupon: selectedCoupon,
+        );
+        if (result) {
+          locator<NavigationService>().clearStackAndShow(Routes.landingView);
+        }
       }
     }
   }

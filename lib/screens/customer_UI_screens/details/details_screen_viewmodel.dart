@@ -26,16 +26,13 @@ class DetailsScreenViewModel extends BaseViewModel {
     setBusyForObject("clubName", false);
   }
 
-  bookPass() async {
-    final response = await locator<NavigationService>().navigateTo(
+  Future bookPass() async {
+    await locator<NavigationService>().navigateTo(
       Routes.bookPass,
       arguments: BookPassArguments(
         event: event,
       ),
     );
-    if (response as bool? ?? false) {
-      refreshEvent();
-    }
   }
 
   Future refreshEvent() async {

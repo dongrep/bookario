@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:bookario/components/enum.dart';
 import 'package:bookario/models/coupon_model.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
@@ -20,6 +21,8 @@ class FirebaseService {
       FirebaseFirestore.instance.collection('promoters');
   final CollectionReference _locationCollectionReference =
       FirebaseFirestore.instance.collection('locations');
+  final CollectionReference _transactionsCollectionReference =
+      FirebaseFirestore.instance.collection('transaction');
   Future updateUser(
     UserModel user,
   ) async {
@@ -67,18 +70,24 @@ class FirebaseService {
     }
   }
 
-  Future<List<EventModel>> getEvents() async {
+  Future<List<EventModel>> getEvents(EventType eventType) async {
     try {
       final List<EventModel> _events = [];
-      final QuerySnapshot result = await _eventsCollectionReference.get();
-      final List<QueryDocumentSnapshot> allEventsData = result.docs;
-      for (int i = 0; i < allEventsData.length; i++) {
-        _events.add(
-          EventModel.fromJson(
-            allEventsData[i].data()! as Map<String, dynamic>,
-            allEventsData[i].id,
-          ),
+
+      final QuerySnapshot result = await _eventsCollectionReference
+          .where("premium", isEqualTo: eventType == EventType.premium)
+          // .where('dateTime', isLessThan: Timestamp.now())
+          .get();
+      for (final event in result.docs) {
+        final data = EventModel.fromJson(
+          event.data()! as Map<String, dynamic>,
+          event.id,
         );
+        if (DateTime.fromMicrosecondsSinceEpoch(
+                data.dateTime.microsecondsSinceEpoch)
+            .isAfter(DateTime.now())) {
+          _events.add(data);
+        }
       }
       return _events;
     } catch (e) {
@@ -113,57 +122,65 @@ class FirebaseService {
     required EventModel event,
     required UserModel user,
     CouponModel? coupon,
+    required String transactionId,
   }) async {
-    // try {
+    try {
+      final transactionRef = _transactionsCollectionReference.doc();
+      final docRef = _passesCollectionReference.doc();
+      final eventPassJson = eventPass.toJson();
+      eventPassJson['transactionId'] = transactionRef.id;
+      await docRef.set(eventPassJson);
+      await addTransaction(transactionRef.id, docRef.id, eventPass.total,
+          transactionId, user.id!);
 
-    final docRef = _passesCollectionReference.doc();
-    await docRef.set(eventPass.toJson());
+      //* Add pass to user profile
+      Map<String, dynamic> data = {
+        "bookedPasses": [...user.bookedPasses ?? [], docRef.id]
+      };
+      await _usersCollectionReference.doc(user.id).set(
+            data,
+            SetOptions(merge: true),
+          );
 
-    //* Add pass to user profile
-    Map<String, dynamic> data = {
-      "bookedPasses": [...user.bookedPasses ?? [], docRef.id]
-    };
-    await _usersCollectionReference.doc(user.id).set(
-          data,
-          SetOptions(merge: true),
-        );
+      //* Add pass to event details
+      data = {
+        "bookedPasses": [...event.bookedPasses ?? [], docRef.id],
+        "remainingPasses": event.remainingPasses - eventPass.passes!.length,
+        "totalMale": event.totalMale + maleCount,
+        "totalFemale": event.totalFemale + femaleCount,
+        "totalTable": event.totalTable + tableCount,
+      };
+      //*Add pass to promoter details
+      if (eventPass.promoterId != null || eventPass.promoterId == "") {
+        addPassDetailsForPromoter(eventPass.promoterId!, event.id, docRef.id);
+      }
 
-    //* Add pass to event details
-    data = {
-      "bookedPasses": [...event.bookedPasses ?? [], docRef.id],
-      "remainingPasses": event.remainingPasses - eventPass.passes!.length,
-      "totalMale": event.totalMale + maleCount,
-      "totalFemale": event.totalFemale + femaleCount,
-      "totalTable": event.totalTable + tableCount,
-      // "passesBookedByPromoter": [
-      //   {
-      //     promoterId: {
-      //       "male": maleCount,
-      //       "female": femaleCount,
-      //       "tableCount": tableCount
-      //     }
-      //   }
-      // ],
-    };
-    //*Add pass to promoter details
-    if (eventPass.promoterId != null || eventPass.promoterId == "") {
-      addPassDetailsForPromoter(eventPass.promoterId!, event.id, docRef.id);
+      //*update coupons quantity
+      if (coupon != null) {
+        updateCouponQuantity(event.id, coupon.id, coupon.remainingCoupons);
+      }
+      await _eventsCollectionReference.doc(event.id).set(
+            data,
+            SetOptions(merge: true),
+          );
+
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
     }
+  }
 
-    //*update coupons quantity
-    if (coupon != null) {
-      updateCouponQuantity(event.id, coupon.id, coupon.remainingCoupons);
-    }
-    await _eventsCollectionReference.doc(event.id).set(
-          data,
-          SetOptions(merge: true),
-        );
-
-    return true;
-    // } catch (e) {
-    //   log(e.toString());
-    //   return false;
-    // }
+  Future addTransaction(String transactionDocId, String passId, double amount,
+      String transactionId, String userId) async {
+    await _transactionsCollectionReference.doc(transactionDocId).set({
+      'type': "pass booking",
+      'userId': userId,
+      'amount': amount,
+      'passId': passId,
+      'timeDate': Timestamp.now(),
+      'transactionID': transactionId,
+    });
   }
 
   Future addPassDetailsForPromoter(
@@ -173,7 +190,6 @@ class FirebaseService {
     if (response.data() != null) {
       passes = [...(response.data()! as Map<String, dynamic>)[eventId] ?? []];
     }
-    print(passes);
     _promotersCollectionReference.doc(promoterId).set({
       eventId: [...passes, passId]
     }, SetOptions(merge: true));

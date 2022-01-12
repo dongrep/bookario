@@ -57,4 +57,9 @@ class SignInViewModel extends BaseViewModel {
     }
     setBusy(false);
   }
+
+  Future forgotPassword() async {
+    _navigationService.navigateTo(Routes.forgotPasswordView,
+        arguments: ForgotPasswordViewArguments(email: email));
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
+import 'package:bookario/components/enum.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:stacked/stacked.dart';
@@ -8,30 +9,22 @@ import 'package:stacked/stacked.dart';
 class HomeScreenViewModel extends BaseViewModel {
   final FirebaseService _firebaseService = locator<FirebaseService>();
 
-  int offset = 0;
-  int limit = 10;
   List<EventModel> allEvents = [];
   List<EventModel> filteredEvents = [];
-  List locations = [];
+  List location = [];
   List<String> allLocations = [];
   bool hasEvents = false;
-  bool homeLoading = true;
-  bool loadMore = false;
-  bool loadingMore = false;
-  bool filterApplied = false;
   String? selectedLocation;
 
-  Future getAllEvents() async {
+  EventType eventType = EventType.home;
+
+  Future getAllEvents(EventType eventType) async {
     try {
       setBusy(true);
-      final List<EventModel> events = await _firebaseService.getEvents();
-      allEvents.addAll(events);
-      if (allEvents.isNotEmpty) {
-        hasEvents = true;
-      }
+      allEvents.addAll(await _firebaseService.getEvents(eventType));
+      hasEvents = allEvents.isNotEmpty;
       filteredEvents = allEvents;
       setBusy(false);
-      notifyListeners();
     } catch (e) {
       log(e.toString());
       setBusy(false);

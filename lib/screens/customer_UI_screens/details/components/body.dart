@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/hovering_back_button.dart';
 import 'package:bookario/components/size_config.dart';
@@ -39,11 +41,6 @@ class Body extends StatelessWidget {
                 ],
               ),
             ),
-            // const Positioned(
-            //   top: 60,
-            //   left: 10,
-            //   child: HoveringBackButton(),
-            // ),
             SingleChildScrollView(
               child: Column(
                 children: [
@@ -78,7 +75,7 @@ class Body extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 color: kSecondaryColor,
-                height: 80,
+                height: Platform.isIOS ? 80 : 60,
                 child: InkWell(
                   onTap: event.remainingPasses > 0
                       ? () => viewModel.bookPass()

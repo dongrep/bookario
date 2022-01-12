@@ -1,4 +1,4 @@
-import 'package:bookario/screens/forgot_password/forgot_password_screen.dart';
+import 'package:bookario/screens/sign_in/sign_in_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 import '../../../components/constants.dart';
@@ -6,7 +6,10 @@ import '../../../components/constants.dart';
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({
     Key? key,
+    required this.viewModel,
   }) : super(key: key);
+
+  final SignInViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +17,7 @@ class ForgotPassword extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         GestureDetector(
-          onTap: () =>
-              Navigator.pushNamed(context, ForgotPasswordScreen.routeName),
+          onTap: () => viewModel.forgotPassword(),
           child: const Text(
             "Forgot Password?",
             style: TextStyle(color: kSecondaryColor),

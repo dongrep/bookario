@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bookario/components/constants.dart';
+import 'package:bookario/components/enum.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/premium_clubs/premium_club_list.dart';
@@ -18,8 +19,12 @@ class _LandingViewState extends State<LandingView>
   PageController _pageController = PageController();
   int _currentIndex = 0;
   final List<Widget> _children = [
-    HomeScreen(),
-    PremiumClubsList(),
+    const HomeScreen(
+      eventType: EventType.home,
+    ),
+    const HomeScreen(
+      eventType: EventType.premium,
+    ),
     ProfileScreen()
   ];
 

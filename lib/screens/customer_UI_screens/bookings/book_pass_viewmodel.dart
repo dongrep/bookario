@@ -156,11 +156,8 @@ class BookPassViewModel extends BaseViewModel {
   }
 
   Future book() async {
-    //Todo: Go to payment page.
-    //Todo: Show coupon area.
-
     if (passes.isNotEmpty) {
-      locator<NavigationService>().navigateTo(
+      await locator<NavigationService>().navigateTo(
         Routes.confirmBookingView,
         arguments: ConfirmBookingViewArguments(
             event: event, passes: passes, totalPrice: totalPrice),

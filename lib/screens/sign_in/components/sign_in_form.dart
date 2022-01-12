@@ -25,7 +25,9 @@ class SignForm extends StatelessWidget {
                   SizedBox(height: getProportionateScreenHeight(30)),
                   buildPasswordFormField(viewModel, context),
                   SizedBox(height: getProportionateScreenHeight(25)),
-                  const ForgotPassword(),
+                  ForgotPassword(
+                    viewModel: viewModel,
+                  ),
                   FormError(errors: viewModel.errors),
                   SizedBox(height: getProportionateScreenHeight(20)),
                   DefaultButton(

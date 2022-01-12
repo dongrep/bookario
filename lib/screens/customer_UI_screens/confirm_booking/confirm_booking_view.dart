@@ -33,191 +33,197 @@ class ConfirmBookingView extends StatelessWidget {
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.grey,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Booking details:",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total Price:",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                Text(
+                                  "Rs.${viewModel.totalPrice - viewModel.discount}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total discount:",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                Text(
+                                  "Rs.${viewModel.discount}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            MaterialButton(
+                              minWidth: double.infinity,
+                              elevation: 2,
+                              color: kSecondaryColor,
+                              onPressed: () => viewModel.book(),
+                              child: const Text("Proceed to Payment",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16)),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      "Enter a promoter code for coupons",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: kSecondaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (viewModel.promoterIdValid)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            "Booking details:",
-                            style:
-                                Theme.of(context).textTheme.headline5!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                            viewModel.promoterId.text,
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Total Price:",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                              ),
-                              Text(
-                                "Rs.${viewModel.totalPrice - viewModel.discount}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Total discount:",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                              ),
-                              Text(
-                                "Rs.${viewModel.discount}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          MaterialButton(
-                            minWidth: double.infinity,
-                            elevation: 2,
-                            color: kSecondaryColor,
-                            onPressed: () => viewModel.book(),
-                            child: const Text("Proceed to Payment",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16)),
-                          )
+                          InkWell(
+                              onTap: () => promoterPopUp(context, viewModel),
+                              child:
+                                  const Icon(Icons.close, color: Colors.white)),
                         ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text(
-                    "Enter a promoter code for coupons",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: kSecondaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (viewModel.promoterIdValid)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          viewModel.promoterId.text,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        InkWell(
-                            onTap: () => promoterPopUp(context, viewModel),
-                            child:
-                                const Icon(Icons.close, color: Colors.white)),
-                      ],
-                    )
-                  else
-                    SizedBox(
-                      width: SizeConfig.screenWidth,
-                      child: MaterialButton(
-                        color: Colors.grey[600],
-                        onPressed: () {
-                          promoterPopUp(context, viewModel);
-                        },
-                        child: const Text(
-                          "Have a promoter code?",
-                          style: TextStyle(color: Colors.white),
+                      )
+                    else
+                      SizedBox(
+                        width: SizeConfig.screenWidth,
+                        child: MaterialButton(
+                          color: Colors.grey[600],
+                          onPressed: () {
+                            promoterPopUp(context, viewModel);
+                          },
+                          child: const Text(
+                            "Have a promoter code?",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                  if (viewModel.promoterIdValid)
-                    SizedBox(
-                      width: SizeConfig.screenWidth,
-                      child: Column(
-                        children: [
-                          if (viewModel.couponsForEvent.isNotEmpty) ...[
-                            const Text(
-                              "Coupons for this event: ",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Column(
-                              children: viewModel.couponsForEvent
-                                  .map(
-                                    (coupon) => InkWell(
-                                      onTap: () => viewModel
-                                          .updateSelectedCoupon(coupon),
-                                      child: Card(
-                                        color: kSecondaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              getCouponDetails(coupon),
-                                              if (viewModel.selectedCoupon ==
-                                                  coupon)
-                                                Container(
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color: Colors.white),
-                                                  padding: EdgeInsets.all(2),
-                                                  child: const Icon(
-                                                    Icons.check,
-                                                    color: Colors.black,
+                    if (viewModel.promoterIdValid)
+                      SizedBox(
+                        width: SizeConfig.screenWidth,
+                        child: Column(
+                          children: [
+                            if (viewModel.couponsForEvent.isNotEmpty) ...[
+                              const Text(
+                                "Coupons for this event: ",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Column(
+                                children: viewModel.couponsForEvent
+                                    .map(
+                                      (coupon) => InkWell(
+                                        onTap: () => viewModel
+                                            .updateSelectedCoupon(coupon),
+                                        child: Card(
+                                          color: kSecondaryColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                getCouponDetails(coupon),
+                                                if (viewModel.selectedCoupon ==
+                                                    coupon)
+                                                  Container(
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color:
+                                                                Colors.white),
+                                                    padding: EdgeInsets.all(2),
+                                                    child: const Icon(
+                                                      Icons.check,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
-                                                ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

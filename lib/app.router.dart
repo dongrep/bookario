@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
 
+import 'components/enum.dart';
+import 'components/make_payment.dart';
 import 'models/event_model.dart';
 import 'models/event_pass_model.dart';
 import 'screens/customer_UI_screens/bookings/book_pass.dart';
@@ -19,6 +21,7 @@ import 'screens/customer_UI_screens/history/booking_history.dart';
 import 'screens/customer_UI_screens/home/home_screen.dart';
 import 'screens/customer_UI_screens/profile/components/edit_profile.dart';
 import 'screens/customer_UI_screens/profile/profile_screen.dart';
+import 'screens/forgot_password/forgot_password_view.dart';
 import 'screens/landing_view/landing_view.dart';
 import 'screens/sign_in/sign_in_screen.dart';
 import 'screens/sign_up/sign_up_screen.dart';
@@ -31,10 +34,12 @@ class Routes {
   static const String landingView = '/landing-page';
   static const String signInScreen = '/sign_in';
   static const String signUpScreen = '/sign_up';
+  static const String forgotPasswordView = '/forgot_password';
   static const String homeScreen = '/home';
   static const String detailsScreen = '/event-details';
   static const String bookPass = '/book-pass';
   static const String confirmBookingView = '/confirm-booking';
+  static const String makePayment = '/make_payment';
   static const String profileScreen = '/my-profile';
   static const String editProfile = '/edit-profile';
   static const String bookingHistory = '/booking-history';
@@ -44,10 +49,12 @@ class Routes {
     landingView,
     signInScreen,
     signUpScreen,
+    forgotPasswordView,
     homeScreen,
     detailsScreen,
     bookPass,
     confirmBookingView,
+    makePayment,
     profileScreen,
     editProfile,
     bookingHistory,
@@ -63,10 +70,12 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.landingView, page: LandingView),
     RouteDef(Routes.signInScreen, page: SignInScreen),
     RouteDef(Routes.signUpScreen, page: SignUpScreen),
+    RouteDef(Routes.forgotPasswordView, page: ForgotPasswordView),
     RouteDef(Routes.homeScreen, page: HomeScreen),
     RouteDef(Routes.detailsScreen, page: DetailsScreen),
     RouteDef(Routes.bookPass, page: BookPass),
     RouteDef(Routes.confirmBookingView, page: ConfirmBookingView),
+    RouteDef(Routes.makePayment, page: MakePayment),
     RouteDef(Routes.profileScreen, page: ProfileScreen),
     RouteDef(Routes.editProfile, page: EditProfile),
     RouteDef(Routes.bookingHistory, page: BookingHistory),
@@ -104,9 +113,23 @@ class StackedRouter extends RouterBase {
         settings: data,
       );
     },
-    HomeScreen: (data) {
+    ForgotPasswordView: (data) {
+      var args = data.getArgs<ForgotPasswordViewArguments>(nullOk: false);
       return MaterialPageRoute<dynamic>(
-        builder: (context) => HomeScreen(),
+        builder: (context) => ForgotPasswordView(
+          key: args.key,
+          email: args.email,
+        ),
+        settings: data,
+      );
+    },
+    HomeScreen: (data) {
+      var args = data.getArgs<HomeScreenArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => HomeScreen(
+          key: args.key,
+          eventType: args.eventType,
+        ),
         settings: data,
       );
     },
@@ -142,6 +165,17 @@ class StackedRouter extends RouterBase {
         settings: data,
       );
     },
+    MakePayment: (data) {
+      var args = data.getArgs<MakePaymentArguments>(nullOk: false);
+      return MaterialPageRoute<dynamic>(
+        builder: (context) => MakePayment(
+          key: args.key,
+          type: args.type,
+          amount: args.amount,
+        ),
+        settings: data,
+      );
+    },
     ProfileScreen: (data) {
       return MaterialPageRoute<dynamic>(
         builder: (context) => ProfileScreen(),
@@ -171,6 +205,20 @@ class StackedRouter extends RouterBase {
 /// Arguments holder classes
 /// *************************************************************************
 
+/// ForgotPasswordView arguments holder class
+class ForgotPasswordViewArguments {
+  final Key? key;
+  final String email;
+  ForgotPasswordViewArguments({this.key, required this.email});
+}
+
+/// HomeScreen arguments holder class
+class HomeScreenArguments {
+  final Key? key;
+  final EventType eventType;
+  HomeScreenArguments({this.key, required this.eventType});
+}
+
 /// DetailsScreen arguments holder class
 class DetailsScreenArguments {
   final Key? key;
@@ -196,6 +244,14 @@ class ConfirmBookingViewArguments {
       required this.event,
       required this.passes,
       required this.totalPrice});
+}
+
+/// MakePayment arguments holder class
+class MakePaymentArguments {
+  final Key? key;
+  final String type;
+  final double amount;
+  MakePaymentArguments({this.key, required this.type, required this.amount});
 }
 
 /// BookingHistory arguments holder class

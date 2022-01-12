@@ -1,0 +1,1 @@
+enum EventType { home, premium }

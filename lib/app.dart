@@ -1,3 +1,4 @@
+import 'package:bookario/components/make_payment.dart';
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass.dart';
 import 'package:bookario/screens/customer_UI_screens/confirm_booking/confirm_booking_view.dart';
 import 'package:bookario/screens/customer_UI_screens/details/details_screen.dart';
@@ -5,6 +6,7 @@ import 'package:bookario/screens/customer_UI_screens/history/booking_history.dar
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/components/edit_profile.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen.dart';
+import 'package:bookario/screens/forgot_password/forgot_password_view.dart';
 import 'package:bookario/screens/landing_view/landing_view.dart';
 import 'package:bookario/screens/sign_in/sign_in_screen.dart';
 import 'package:bookario/screens/sign_up/sign_up_screen.dart';
@@ -25,12 +27,16 @@ import 'package:stacked_services/stacked_services.dart';
     //*Login flow
     MaterialRoute(page: SignInScreen, path: "/sign_in"),
     MaterialRoute(page: SignUpScreen, path: "/sign_up"),
+    MaterialRoute(page: ForgotPasswordView, path: "/forgot_password"),
 
     //*Home Screen flow
     MaterialRoute(page: HomeScreen, path: "/home"),
+
+    //*Event booking flow
     MaterialRoute(page: DetailsScreen, path: "/event-details"),
     MaterialRoute(page: BookPass, path: "/book-pass"),
     MaterialRoute(page: ConfirmBookingView, path: "/confirm-booking"),
+    MaterialRoute(page: MakePayment, path: "/make_payment"),
 
     //*Profile Screen flow
     MaterialRoute(page: ProfileScreen, path: "/my-profile"),
