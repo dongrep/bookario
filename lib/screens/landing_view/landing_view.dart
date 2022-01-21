@@ -6,6 +6,8 @@ import 'package:bookario/components/size_config.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:line_icons/line_icons.dart';
 
 class LandingView extends StatefulWidget {
   static String routeName = "/navbar";
@@ -93,29 +95,76 @@ class _LandingViewState extends State<LandingView>
         controller: _pageController,
         children: _children,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF141414),
-        unselectedItemColor: Colors.grey,
-        fixedColor: kSecondaryColor,
-        onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: kSecondaryColor,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20,
+              color: Colors.white.withOpacity(.1),
+            )
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: GNav(
+              rippleColor: Colors.grey[300]!,
+              hoverColor: Colors.grey[100]!,
+              gap: 8,
+              activeColor: Colors.black,
+              iconSize: 24,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
+              tabBackgroundColor: Colors.grey[100]!,
+              color: Colors.white,
+              tabs: const [
+                GButton(
+                  icon: LineIcons.home,
+                  text: 'Home',
+                ),
+                GButton(
+                  icon: LineIcons.starAlt,
+                  text: 'Premium',
+                ),
+                GButton(
+                  icon: LineIcons.user,
+                  text: 'Profile',
+                ),
+              ],
+              selectedIndex: _currentIndex,
+              onTabChange: (index) {
+                onTabTapped(index);
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Premium Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          )
-        ],
+        ),
       ),
     );
   }
+  // bottomNavigationBar: BottomNavigationBar(
+  //   backgroundColor: const Color(0xFF141414),
+  //   unselectedItemColor: Colors.grey,
+  //   fixedColor: kSecondaryColor,
+  //   onTap: onTabTapped,
+  //   currentIndex: _currentIndex,
+  //   items: const [
+  //     BottomNavigationBarItem(
+  //       icon: Icon(Icons.home),
+  //       label: 'Home',
+  //     ),
+  //     BottomNavigationBarItem(
+  //       icon: Icon(Icons.star),
+  //       label: 'Premium Events',
+  //     ),
+  //     BottomNavigationBarItem(
+  //       icon: Icon(Icons.person),
+  //       label: 'Profile',
+  //     )
+  //   ],
+  // ),
+  //   );
+  // }
 
   void onTabTapped(int index) {
     _pageController.animateToPage(

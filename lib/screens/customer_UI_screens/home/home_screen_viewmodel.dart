@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
+import 'package:bookario/app.router.dart';
 import 'package:bookario/components/enum.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class HomeScreenViewModel extends BaseViewModel {
   final FirebaseService _firebaseService = locator<FirebaseService>();
@@ -51,5 +53,12 @@ class HomeScreenViewModel extends BaseViewModel {
     }
 
     notifyListeners();
+  }
+
+  Future showEventDetails(EventModel event) async {
+    await locator<NavigationService>().navigateTo(
+      Routes.detailsScreen,
+      arguments: DetailsScreenArguments(event: event),
+    );
   }
 }

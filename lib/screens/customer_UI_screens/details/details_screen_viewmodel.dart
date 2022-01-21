@@ -41,4 +41,8 @@ class DetailsScreenViewModel extends BaseViewModel {
     event = await _firebaseService.getEvent(event.id);
     notifyListeners();
   }
+
+  void goBack() {
+    locator<NavigationService>().back();
+  }
 }

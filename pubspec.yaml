@@ -33,14 +33,14 @@ dependencies:
   firebase_core:
   firebase_auth:
   cloud_firestore:
-  pie_chart: ^5.0.1
   flutter_email_sender: ^5.0.2
-  clipboard: ^0.1.2+8
   random_string: ^2.1.0
   image_picker: ^0.8.4+3
   razorpay_flutter: ^1.2.6
   qr_flutter: ^4.0.0
   fluttertoast: ^8.0.8
+  google_nav_bar: ^5.0.5
+  line_icons: ^2.0.1
 
   # Architecture
   stacked: ^2.1.0

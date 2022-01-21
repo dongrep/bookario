@@ -3,11 +3,11 @@ import 'package:bookario/app.router.dart';
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/enum.dart';
 import 'package:bookario/models/event_model.dart';
+import 'package:bookario/screens/customer_UI_screens/home/home_screen_viewmodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:stacked_services/stacked_services.dart';
 
 import '../../../../components/size_config.dart';
 
@@ -15,11 +15,11 @@ class EventCard extends StatelessWidget {
   const EventCard({
     Key? key,
     required this.event,
-    required this.eventType,
+    required this.viewModel,
   }) : super(key: key);
 
   final EventModel event;
-  final EventType eventType;
+  final HomeScreenViewModel viewModel;
 
   Widget getTimeOfEvent(Timestamp dateTime) {
     final DateTime temp =
@@ -57,10 +57,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => locator<NavigationService>().navigateTo(
-        Routes.detailsScreen,
-        arguments: DetailsScreenArguments(event: event),
-      ),
+      onTap: () => viewModel.showEventDetails(event),
       child: SizedBox(
         width: SizeConfig.screenWidth * .96,
         height: getProportionateScreenWidth(200),
@@ -121,7 +118,7 @@ class EventCard extends StatelessWidget {
                   left: 10,
                   top: 10,
                   child: Text(
-                    "★ ${eventType == EventType.home ? "Premium Event" : ""}",
+                    "★ ${viewModel.eventType == EventType.home ? "Premium Event" : ""}",
                     style: const TextStyle(
                       color: kSecondaryColor,
                       fontSize: 18,

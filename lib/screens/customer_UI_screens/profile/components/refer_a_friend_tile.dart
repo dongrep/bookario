@@ -1,7 +1,6 @@
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/services/local_storage_service.dart';
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:random_string/random_string.dart';
@@ -59,9 +58,6 @@ class _ReferAFriendTileState extends State<ReferAFriendTile> {
                   Container(
                     padding: const EdgeInsets.only(right: 8),
                     child: InkWell(
-                      onTap: () async {
-                        await FlutterClipboard.copy(referralCode.toString());
-                      },
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Icon(

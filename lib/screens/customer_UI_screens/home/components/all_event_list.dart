@@ -23,8 +23,9 @@ class AllEventList extends StatelessWidget {
                 return Column(
                   children: [
                     EventCard(
-                        event: viewModel.filteredEvents[index],
-                        eventType: viewModel.eventType),
+                      event: viewModel.filteredEvents[index],
+                      viewModel: viewModel,
+                    ),
                     const SizedBox(
                       height: 8,
                     ),

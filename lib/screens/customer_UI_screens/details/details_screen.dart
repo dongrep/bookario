@@ -12,7 +12,6 @@ class DetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: kPrimaryColor,
       body: Body(event: event),
     );
   }
