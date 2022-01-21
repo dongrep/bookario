@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/app.router.dart';
+import 'package:bookario/components/constants.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:bookario/models/event_pass_model.dart';
 import 'package:bookario/models/pass_type_model.dart';
-import 'package:bookario/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -11,6 +13,8 @@ import 'package:stacked_services/stacked_services.dart';
 enum passTypes { male, female, couple, table }
 
 class BookPassViewModel extends BaseViewModel {
+  final DialogService _dialogService = locator<DialogService>();
+
   final GlobalKey<FormState> bookingFormKey = GlobalKey<FormState>();
   bool booked = false;
   bool addClicked = false;
@@ -28,9 +32,9 @@ class BookPassViewModel extends BaseViewModel {
 
   late EventModel event;
 
-  PassType? selectedPass;
+  PassTypeModel? selectedPass;
 
-  List<PassType>? applicablePasses = [];
+  List<PassTypeModel>? applicablePasses = [];
 
   int maleCount = 0;
 
@@ -67,48 +71,53 @@ class BookPassViewModel extends BaseViewModel {
     }
   }
 
-  void showPassDetailsForm(String type) {
-    passEntry = {};
-    passEntry['name'] = TextEditingController();
-    passEntry['age'] = TextEditingController();
-    if (type.contains("Male")) {
-      passType = passTypes.male;
-      applicablePasses = event.stagMaleEntry;
-      passEntry['entryType'] = "Stag Male Entry";
-      passEntry['gender'] = "Male";
-    } else if (type.contains("Female")) {
-      passType = passTypes.female;
-      applicablePasses = event.stagFemaleEntry;
-      passEntry['entryType'] = "Stag Female Entry";
-      passEntry['gender'] = "Female";
-    } else if (type.contains("Couple")) {
-      passType = passTypes.couple;
+  void showPassDetailsForm({required String type, required bool isActive}) {
+    if (isActive) {
       passEntry = {};
-      passEntry['entryType'] = "Couple Entry";
-      passEntry['maleName'] = TextEditingController();
-      passEntry['maleAge'] = TextEditingController();
-      passEntry['maleGender'] = "Male";
-      passEntry['femaleName'] = TextEditingController();
-      passEntry['femaleAge'] = TextEditingController();
-      passEntry['femaleGender'] = "Female";
-      applicablePasses = event.coupleEntry;
-    } else if (type.contains("Table")) {
-      passType = passTypes.table;
-      passEntry['entryType'] = "Table";
-      passEntry['gender'] = "table";
-      applicablePasses = event.tableOption;
+      passEntry['name'] = TextEditingController();
+      passEntry['age'] = TextEditingController();
+      if (type.contains("Male")) {
+        passType = passTypes.male;
+        applicablePasses = event.stagMaleEntry;
+        passEntry['entryType'] = "Stag Male Entry";
+        passEntry['gender'] = "Male";
+      } else if (type.contains("Female")) {
+        passType = passTypes.female;
+        applicablePasses = event.stagFemaleEntry;
+        passEntry['entryType'] = "Stag Female Entry";
+        passEntry['gender'] = "Female";
+      } else if (type.contains("Couple")) {
+        passType = passTypes.couple;
+        passEntry = {};
+        passEntry['entryType'] = "Couple Entry";
+        passEntry['maleName'] = TextEditingController();
+        passEntry['maleAge'] = TextEditingController();
+        passEntry['maleGender'] = "Male";
+        passEntry['femaleName'] = TextEditingController();
+        passEntry['femaleAge'] = TextEditingController();
+        passEntry['femaleGender'] = "Female";
+        applicablePasses = event.coupleEntry;
+      } else if (type.contains("Table")) {
+        passType = passTypes.table;
+        passEntry['entryType'] = "Table";
+        passEntry['gender'] = "table";
+        applicablePasses = event.tableOption;
+      } else {
+        passType = null;
+      }
+      notifyListeners();
     } else {
-      passType = null;
+      _dialogService.showDialog(title: "Male stag pass not available!");
     }
-    notifyListeners();
   }
 
-  void updatePassEntrySelectedPass() {
+  void updatePassEntrySelectedPass([PassTypeModel? value]) {
+    selectedPass = value;
     passEntry['passType'] = getPassType(selectedPass!);
   }
 
-  String getPassType(PassType pass) {
-    return "${pass.type} : ₹ ${pass.cover + pass.entry}${(pass.cover > 0.0) ? " (Cover ₹${pass.cover})" : ""} ${(pass.allowed != null) ? " Admits : ${pass.allowed}" : ""}";
+  String getPassType(PassTypeModel pass) {
+    return "${pass.type} : ₹ ${pass.entry}${(pass.cover > 0.0) ? " (Cover $ruppeeSymbol ${pass.cover})" : ""} ${(pass.allowed != null) ? " Admits : ${pass.allowed}" : ""}";
   }
 
   void addPass() {
@@ -125,7 +134,7 @@ class BookPassViewModel extends BaseViewModel {
           "femaleAge": int.parse(passEntry['femaleAge'].text as String),
           "passType": passEntry['passType'],
           "femaleGender": 'Female',
-          "passCost": selectedPass!.cover + selectedPass!.entry
+          "passCost": selectedPass!.entry
         }),
       );
     } else {
@@ -143,11 +152,11 @@ class BookPassViewModel extends BaseViewModel {
           "age": int.parse(passEntry['age'].text as String),
           "passType": passEntry['passType'],
           "gender": passEntry['gender'],
-          "passCost": selectedPass!.cover + selectedPass!.entry
+          "passCost": selectedPass!.entry
         }),
       );
     }
-    totalPrice += selectedPass!.cover + selectedPass!.entry;
+    totalPrice += selectedPass!.entry;
     passEntry = {};
     passType = null;
     dropDownList = [];
@@ -173,9 +182,51 @@ class BookPassViewModel extends BaseViewModel {
   bool checkRatio() {
     if (event.femaleRatio > 0 && event.maleRatio > 0) {
       final double requiredRatio = event.femaleRatio / event.maleRatio;
-      final double currentRatio = event.totalFemale / event.totalMale;
-      if (currentRatio >= requiredRatio) return true;
+      final double currentRatio =
+          (event.totalFemale + femaleCount) / (event.totalMale + maleCount);
+      if (currentRatio >= requiredRatio) {
+        return true;
+      } else {
+        return false;
+      }
     }
     return true;
+  }
+
+  Future removePass(Passes pass) async {
+    final response = await _dialogService.showConfirmationDialog(
+        title: "Are you sure you want to remove this pass?");
+    if (response?.confirmed ?? false) {
+      totalPrice -= double.parse(
+        pass.passCost.toString(),
+      );
+      if ((pass.entryType)!.contains("Male")) {
+        --maleCount;
+      } else if ((pass.entryType)!.contains("Female")) {
+        --femaleCount;
+      } else if ((pass.entryType)!.contains("Couple")) {
+        --maleCount;
+        --femaleCount;
+      } else {
+        --tableCount;
+      }
+      passes.remove(pass);
+      final bool maleAllowed = checkRatio();
+      if (!maleAllowed) {
+        //Todo: take care of total price as well and maleCount
+        final List<Passes> malePasses = passes
+            .where((element) => element.entryType!.contains("Male"))
+            .toList();
+        for (final element in malePasses) {
+          totalPrice -= double.parse(
+            element.passCost.toString(),
+          );
+          --maleCount;
+          passes.remove(element);
+        }
+      }
+      log('couplesCount $couplesCount, maleCount: $maleCount, femaleCount: $femaleCount totalPrice: $totalPrice');
+      notifyListeners();
+    }
   }
 }

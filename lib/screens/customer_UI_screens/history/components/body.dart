@@ -29,7 +29,7 @@ class Body extends StatelessWidget {
                               ...List.generate(
                                 viewModel.eventPasses.length,
                                 (index) {
-                                  EventPass currentEventPass =
+                                  final EventPass currentEventPass =
                                       viewModel.eventPasses[index];
                                   return Container(
                                     margin: const EdgeInsets.only(bottom: 6),
@@ -180,7 +180,6 @@ class Body extends StatelessWidget {
                         ),
                       ),
                       ...passesList(currentEventPass, context),
-                      const SizedBox(height: 10),
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -212,6 +211,9 @@ class Body extends StatelessWidget {
                           ],
                         ),
                       ),
+                      const SizedBox(
+                        height: 8,
+                      )
                     ],
                   ),
                 ),

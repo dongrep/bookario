@@ -1,11 +1,11 @@
-import 'dart:developer';
-
 import 'package:bookario/components/constants.dart';
 import 'package:bookario/models/event_model.dart';
-import 'package:bookario/models/pass_type_model.dart';
 import 'package:bookario/screens/customer_UI_screens/bookings/book_pass_viewmodel.dart';
+import 'package:bookario/screens/customer_UI_screens/bookings/components/couple_pass_form_widget.dart';
+import 'package:bookario/screens/customer_UI_screens/bookings/components/pass_details_form_widget.dart';
+import 'package:bookario/screens/customer_UI_screens/bookings/components/pass_type.dart';
+import 'package:bookario/screens/customer_UI_screens/bookings/components/table_pass_form_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stacked/stacked.dart';
 
 class BookPass extends StatelessWidget {
@@ -82,185 +82,156 @@ class BookPass extends StatelessWidget {
                 onPressed: () => confirmDiscard(context),
               ),
             ),
-            body: Builder(
-              builder: (context) => SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        event.name,
-                        style: Theme.of(context).textTheme.headline6!.copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+            body: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            event.name,
+                            style:
+                                Theme.of(context).textTheme.headline6!.copyWith(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        if (viewModel.event.coupleEntry.isNotEmpty)
+                          PassType(
+                              type: "Couple Pass",
+                              viewModel: viewModel,
+                              passTypes: viewModel.event.coupleEntry),
+                        if (viewModel.event.stagMaleEntry.isNotEmpty)
+                          PassType(
+                              type: "Male Stag Pass",
+                              viewModel: viewModel,
+                              passTypes: viewModel.event.stagMaleEntry,
+                              isActive: viewModel.checkRatio()),
+                        if (viewModel.event.stagFemaleEntry.isNotEmpty)
+                          PassType(
+                              type: "Female Stag Pass",
+                              viewModel: viewModel,
+                              passTypes: viewModel.event.stagFemaleEntry),
+                        if (viewModel.event.tableOption.isNotEmpty)
+                          PassType(
+                              type: "Book Table",
+                              viewModel: viewModel,
+                              passTypes: viewModel.event.tableOption),
+                        if (viewModel.event.remainingPasses > 0)
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Column(
+                              children: [
+                                if (viewModel.passType == passTypes.male)
+                                  PassDetailsFormWidget(
+                                      viewModel: viewModel, isMale: true),
+                                if (viewModel.passType == passTypes.female)
+                                  PassDetailsFormWidget(
+                                    viewModel: viewModel,
+                                  ),
+                                if (viewModel.passType == passTypes.couple)
+                                  CouplePassFormWidget(viewModel: viewModel),
+                                if (viewModel.passType == passTypes.table)
+                                  TablePassFormWidget(
+                                    viewModel: viewModel,
+                                  ),
+                                if (viewModel.passType != null)
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      MaterialButton(
+                                        onPressed: () {
+                                          viewModel.passType = null;
+                                          viewModel.notifyListeners();
+                                        },
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      MaterialButton(
+                                        onPressed: () {
+                                          viewModel.addPass();
+                                        },
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        color: kSecondaryColor,
+                                        child: const Text(
+                                          'Add',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                              ],
                             ),
-                      ),
+                          ),
+                        getAddedPassesList(viewModel, context),
+                        const SizedBox(
+                          height: 80,
+                        ),
+                      ],
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    if (viewModel.event.coupleEntry.isNotEmpty)
-                      _passType(context, "Couple Pass", viewModel),
-                    if (viewModel.event.stagMaleEntry.isNotEmpty &&
-                        viewModel.checkRatio())
-                      _passType(context, "Male Stag Pass", viewModel),
-                    if (viewModel.event.stagFemaleEntry.isNotEmpty)
-                      _passType(context, "Female Stag Pass", viewModel),
-                    if (viewModel.event.tableOption.isNotEmpty)
-                      _passType(context, "Book Table", viewModel),
-                    if (viewModel.event.remainingPasses > 0)
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          children: [
-                            if (viewModel.passType == passTypes.male)
-                              ...passFormWidget(context, viewModel,
-                                  isMale: true),
-                            if (viewModel.passType == passTypes.female)
-                              ...passFormWidget(context, viewModel),
-                            if (viewModel.passType == passTypes.couple) ...[
-                              divider(),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Center(
-                                child: Text(
-                                  "Book Couple Pass",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              divider(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const WhiteText(
-                                text: "Male Entry",
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              bookByNameFormField(
-                                  viewModel,
-                                  viewModel.passEntry['maleName']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              ageFormField(
-                                  viewModel,
-                                  viewModel.passEntry['maleAge']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const WhiteText(text: "Female Entry"),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              bookByNameFormField(
-                                  viewModel,
-                                  viewModel.passEntry['femaleName']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              ageFormField(
-                                  viewModel,
-                                  viewModel.passEntry['femaleAge']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              passTypeDropDown(viewModel, context),
-                            ],
-                            if (viewModel.passType == passTypes.table) ...[
-                              const Center(
-                                child: Text(
-                                  "Book Table",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white38,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              bookByNameFormField(
-                                  viewModel,
-                                  viewModel.passEntry['name']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              ageFormField(
-                                  viewModel,
-                                  viewModel.passEntry['age']
-                                      as TextEditingController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              passTypeDropDown(viewModel, context),
-                            ],
-                            if (viewModel.passType != null)
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  MaterialButton(
-                                    onPressed: () {
-                                      viewModel.passType = null;
-                                      viewModel.notifyListeners();
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: const Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  MaterialButton(
-                                    onPressed: () {
-                                      viewModel.addPass();
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    color: kSecondaryColor,
-                                    child: const Text(
-                                      'Add',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
+                  ),
+                ),
+                if (MediaQuery.of(context).viewInsets.bottom == 0)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () => viewModel.book(),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 30),
+                          // width: 220,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: kPrimaryColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text("Total: ₹ ${viewModel.totalPrice}",
+                                    style: const TextStyle(
+                                        color: kSecondaryColor, fontSize: 18)),
+                                const Icon(Icons.arrow_forward_ios_sharp,
+                                    color: kSecondaryColor),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    getDismissableList(viewModel, context),
-                  ],
-                ),
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => viewModel.book(),
-              backgroundColor: kSecondaryColor,
-              child: const Icon(Icons.arrow_forward_ios_sharp),
+                    ),
+                  ),
+              ],
             ),
           ),
         );
@@ -269,40 +240,7 @@ class BookPass extends StatelessWidget {
     );
   }
 
-  List<Widget> passFormWidget(
-    BuildContext context,
-    BookPassViewModel viewModel, {
-    bool isMale = false,
-  }) {
-    return [
-      Center(
-        child: Text(
-          "Book ${isMale ? "Male" : "Female"} Stag Pass",
-          style: const TextStyle(fontSize: 18, color: Colors.white38),
-        ),
-      ),
-      const SizedBox(
-        height: 20,
-      ),
-      bookByNameFormField(
-        viewModel,
-        viewModel.passEntry['name'] as TextEditingController,
-      ),
-      const SizedBox(
-        height: 20,
-      ),
-      ageFormField(
-        viewModel,
-        viewModel.passEntry['age'] as TextEditingController,
-      ),
-      const SizedBox(
-        height: 20,
-      ),
-      passTypeDropDown(viewModel, context),
-    ];
-  }
-
-  Widget getDismissableList(BookPassViewModel viewModel, BuildContext context) {
+  Widget getAddedPassesList(BookPassViewModel viewModel, BuildContext context) {
     if (viewModel.passes.isNotEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -312,7 +250,7 @@ class BookPass extends StatelessWidget {
               "All Passes",
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.white38,
+                color: Colors.white,
               ),
             ),
             const SizedBox(
@@ -321,178 +259,65 @@ class BookPass extends StatelessWidget {
             Column(
               children: List.generate(
                 viewModel.passes.length,
-                (index) => Dismissible(
-                  key: Key(viewModel.passes[index].name ??
-                      viewModel.passes[index].maleName.toString()),
-                  onDismissed: (direction) {
-                    viewModel.totalPrice -= double.parse(
-                      viewModel.passes[index].passCost.toString(),
-                    );
-                    if ((viewModel.passes[index].entryType)!.contains("Male")) {
-                      --viewModel.maleCount;
-                    } else if ((viewModel.passes[index].entryType)!
-                        .contains("Female")) {
-                      --viewModel.femaleCount;
-                    } else if ((viewModel.passes[index].entryType)!
-                        .contains("Couple")) {
-                      --viewModel.maleCount;
-                      --viewModel.femaleCount;
-                    } else {
-                      --viewModel.tableCount;
-                    }
-                    log('couplesCount ${viewModel.couplesCount}, maleCount: ${viewModel.maleCount}, femaleCount: ${viewModel.femaleCount}');
-                    viewModel.passes.removeAt(index);
-                    const String action = "discarded";
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Center(child: Text("Booking $action")),
-                      ),
-                    );
-                  },
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
+                (index) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    margin: const EdgeInsets.symmetric(vertical: 2),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white70),
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: ClipRRect(
-                      child: (viewModel.passes[index].entryType)!
-                              .contains("Couple")
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        color: kSecondaryColor),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if ((viewModel.passes[index].entryType)!
+                                      .contains("Couple")) ...[
                                     Text(
                                       "${viewModel.passes[index].maleName},\tMale, \t${viewModel.passes[index].maleAge}",
                                       style: const TextStyle(
-                                          fontSize: 17, color: Colors.white70),
+                                          fontSize: 17, color: Colors.white),
                                     ),
                                     Text(
                                       "${viewModel.passes[index].femaleName},\tFemale ,\t${viewModel.passes[index].femaleAge}",
                                       style: const TextStyle(
-                                          fontSize: 17, color: Colors.white70),
+                                          fontSize: 17, color: Colors.white),
                                     ),
+                                  ] else ...[
                                     Text(
-                                      "Couple's Entry,\n${viewModel.passes[index].passType}",
+                                      '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
                                       style: const TextStyle(
-                                          fontSize: 14, color: Colors.white70),
+                                          fontSize: 17, color: Colors.white),
                                     ),
                                   ],
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            backgroundColor: Colors.grey[900],
-                                            title: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons.arrow_back,
-                                                  color: Colors.white,
-                                                  size: 15,
-                                                ),
-                                                Text(
-                                                  ' Swipe left to discard this booking',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                                  Text(
+                                    "${viewModel.passes[index].entryType!}\n${viewModel.passes[index].passType!}",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
                                   ),
-                                )
-                              ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  flex: 4,
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${viewModel.passes[index].name}, ${viewModel.passes[index].age}',
-                                        style: const TextStyle(
-                                            fontSize: 17,
-                                            color: Colors.white70),
-                                      ),
-                                      Text(
-                                        "${viewModel.passes[index].entryType!}\n${viewModel.passes[index].passType!}",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.white70),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              backgroundColor: Colors.grey[900],
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: const [
-                                                  Icon(
-                                                    Icons.arrow_back,
-                                                    color: Colors.white70,
-                                                    size: 15,
-                                                  ),
-                                                  Text(
-                                                    ' Swipe left to discard this booking',
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          });
-                                    },
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
+                            IconButton(
+                              onPressed: () {
+                                viewModel.removePass(viewModel.passes[index]);
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -505,184 +330,6 @@ class BookPass extends StatelessWidget {
       return const Text('You have not added any passes yet');
     }
   }
-
-  Widget _passType(
-    BuildContext context,
-    String type,
-    BookPassViewModel viewModel,
-  ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10, bottom: 15),
-          child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          "assets/icons/Cash.svg",
-                          height: 12,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          type,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-            onPressed: () {
-              viewModel.showPassDetailsForm(type);
-            },
-            icon: const Icon(
-              Icons.add_circle,
-              color: Colors.white38,
-            ))
-      ],
-    );
-  }
-
-  TextFormField bookByNameFormField(
-      BookPassViewModel viewModel, TextEditingController nameController) {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white70),
-      keyboardType: TextInputType.name,
-      controller: nameController,
-      cursorColor: Colors.white70,
-      textInputAction: TextInputAction.go,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          viewModel.removeError(error: "Name cannot be empty");
-        }
-        return;
-      },
-      validator: (value) {
-        if (value!.isEmpty) {
-          viewModel.addError(error: "Name cannot be empty");
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Booking by name",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
-  }
-
-  TextFormField nameFormField(BookPassViewModel viewModel) {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white70),
-      keyboardType: TextInputType.name,
-      cursorColor: Colors.white70,
-      textInputAction: TextInputAction.go,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          viewModel.removeError(error: "Name cannot be empty");
-        }
-        return;
-      },
-      validator: (value) {
-        if (value!.isEmpty) {
-          viewModel.addError(error: "Name cannot be empty");
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Name",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
-  }
-
-  TextFormField ageFormField(
-      BookPassViewModel viewModel, TextEditingController ageController) {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white70),
-      keyboardType: TextInputType.number,
-      cursorColor: Colors.white70,
-      controller: ageController,
-      textInputAction: TextInputAction.go,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          viewModel.removeError(error: "Please Enter age");
-        }
-        return;
-      },
-      validator: (value) {
-        if (value!.isEmpty) {
-          viewModel.addError(error: "Please Enter age");
-          return "";
-        } else if (int.tryParse(value) is! int) {
-          viewModel.addError(error: "Please Enter valid value");
-          return "";
-        } else if (int.tryParse(value)! > 100 || int.tryParse(value)! < 13) {
-          viewModel.addError(error: "Please Enter age");
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Age",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-    );
-  }
-
-  Widget passTypeDropDown(BookPassViewModel viewModel, BuildContext context) {
-    return DropdownButtonFormField<PassType>(
-      onTap: () => FocusScope.of(context).unfocus(),
-      value: viewModel.selectedPass,
-      dropdownColor: kSecondaryColor,
-      style: const TextStyle(color: kPrimaryColor),
-      onChanged: (PassType? value) {
-        viewModel.selectedPass = value;
-        viewModel.updatePassEntrySelectedPass();
-      },
-      items: getDropDownItems(viewModel),
-      validator: (value) => value == null ? 'Select Pass Type' : null,
-      decoration: const InputDecoration(
-        labelText: 'Pass Type',
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      ),
-    );
-  }
-
-  List<DropdownMenuItem<PassType>>? getDropDownItems(
-    BookPassViewModel viewModel,
-  ) {
-    final List<DropdownMenuItem<PassType>> items = [];
-    for (int i = 0; i < viewModel.applicablePasses!.length; i++) {
-      items.add(
-        DropdownMenuItem(
-          value: viewModel.applicablePasses![i],
-          child: SizedBox(
-            width: 300,
-            child: Text(
-              viewModel.getPassType(viewModel.applicablePasses![i]),
-            ),
-          ),
-        ),
-      );
-    }
-    return items;
-  }
 }
 
 class WhiteText extends StatelessWidget {
@@ -694,17 +341,3 @@ class WhiteText extends StatelessWidget {
     return Text(text, style: const TextStyle(color: Colors.white));
   }
 }
-
-
-// const Text(
-        //   "Available Passes : ",
-        //   style: TextStyle(
-        //     fontSize: 18,
-        //     color: kSecondaryColor,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
-        // AllPrices(event: event),
-        // const SpacingWidget(),
-        // 
-        //   )

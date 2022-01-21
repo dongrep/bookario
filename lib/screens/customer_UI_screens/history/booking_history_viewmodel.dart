@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/models/event_pass_model.dart';
+import 'package:bookario/services/authentication_service.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:bookario/services/local_storage_service.dart';
 import 'package:stacked/stacked.dart';
@@ -20,6 +21,8 @@ class BookingHistoryViewModel extends BaseViewModel {
   final LocalStorageService _localStorageService =
       locator<LocalStorageService>();
   final FirebaseService _firebaseService = locator<FirebaseService>();
+  final AuthenticationService _authenticationService =
+      locator<AuthenticationService>();
 
   void updateIsExpanded(int index) {
     isExpanded[index] = !isExpanded[index];
@@ -27,7 +30,7 @@ class BookingHistoryViewModel extends BaseViewModel {
   }
 
   Future getBookingData() async {
-    final String uid = _localStorageService.getter('uid').toString();
+    final String uid = _authenticationService.currentUser!.id!;
 
     setBusy(true);
     eventPasses = await _firebaseService.getPasses(uid);

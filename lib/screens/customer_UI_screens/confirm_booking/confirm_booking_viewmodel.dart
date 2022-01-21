@@ -55,6 +55,8 @@ class ConfirmBookingViewModel extends BaseViewModel {
           discount = selectedCoupon!.maxAmount;
         }
       }
+    } else {
+      discount = 0;
     }
   }
 
@@ -123,6 +125,11 @@ class ConfirmBookingViewModel extends BaseViewModel {
           coupon: selectedCoupon,
         );
         if (result) {
+          await locator<DialogService>().showDialog(
+            title: "Congratulations",
+            description:
+                "Your passes have been booked! Check in your Profile section to find booked passes.",
+          );
           locator<NavigationService>().clearStackAndShow(Routes.landingView);
         }
       }

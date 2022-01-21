@@ -27,6 +27,7 @@ class ProfileScreenViewModel extends BaseViewModel {
 
   Future populateDetails() async {
     user = _authenticationService.currentUser!;
+    populateFields();
   }
 
   FocusNode nameFocusNode = FocusNode();
@@ -48,20 +49,22 @@ class ProfileScreenViewModel extends BaseViewModel {
   Future<void> updateUserProfile() async {
     try {
       final UserModel newUser = UserModel(
-        id: user.id,
-        name: nameEditingController.text,
-        phone: phoneNumberEditingController.text,
-        email: user.email,
-        age: ageEditingController.text,
-        gender: user.gender,
-      );
-      _firebaseService.updateUser(newUser);
+          id: user.id,
+          name: nameEditingController.text,
+          phone: phoneNumberEditingController.text,
+          email: user.email,
+          age: ageEditingController.text,
+          gender: user.gender,
+          promoterId: user.promoterId,
+          bookedPasses: user.bookedPasses);
+      await _firebaseService.updateUser(newUser);
+      refreshUser(user.id!);
       await _dialogService.showDialog(
           title: "Success", description: "Profile Updated!");
       _navigationService.back(result: true);
     } catch (e) {
-      print('Error updating user profile: ');
-      print(e);
+      log('Error updating user profile: ');
+      log(e.toString());
     }
   }
 
@@ -102,9 +105,10 @@ class ProfileScreenViewModel extends BaseViewModel {
         age: user.age,
         gender: user.gender,
         promoterId: promoterId,
+        bookedPasses: user.bookedPasses,
       );
-      _firebaseService.updateUser(newUser);
-      _firebaseService.updatePromoterList(
+      await _firebaseService.updateUser(newUser);
+      await _firebaseService.updatePromoterList(
         promoterId,
         newUser.id!,
         newUser.name,
@@ -113,11 +117,15 @@ class ProfileScreenViewModel extends BaseViewModel {
         title: "Success",
         description: "Profile Updated!",
       );
-      await _authenticationService.refreshUser(newUser.id!);
-      populateDetails();
-      notifyListeners();
+      refreshUser(newUser.id!);
     } catch (e) {
       log('Error updating user profile: $e');
     }
+  }
+
+  Future refreshUser(String userId) async {
+    await _authenticationService.refreshUser(userId);
+    populateDetails();
+    notifyListeners();
   }
 }

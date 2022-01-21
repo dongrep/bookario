@@ -20,8 +20,15 @@ class AllEventList extends StatelessWidget {
             ...List.generate(
               viewModel.filteredEvents.length,
               (index) {
-                return EventCard(
-                  event: viewModel.filteredEvents[index],
+                return Column(
+                  children: [
+                    EventCard(
+                        event: viewModel.filteredEvents[index],
+                        eventType: viewModel.eventType),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                  ],
                 );
               },
             ),

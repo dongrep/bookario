@@ -87,8 +87,7 @@ class _MakePaymentState extends State<MakePayment> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     Fluttertoast.showToast(
-        msg:
-            "Success! This event will now appear in the premium events section!",
+        msg: "Success! Your passes have been booked!",
         toastLength: Toast.LENGTH_SHORT);
     Navigator.pop(context, ["SUCCESS", response.paymentId!]);
   }

@@ -15,7 +15,6 @@ class HomeScreen extends StatelessWidget {
     return ViewModelBuilder<HomeScreenViewModel>.reactive(
         onModelReady: (viewModel) async {
           await viewModel.getAllEvents(eventType);
-          await viewModel.getAllLocations();
         },
         viewModelBuilder: () => HomeScreenViewModel(),
         builder: (context, viewModel, child) {

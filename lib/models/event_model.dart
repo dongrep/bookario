@@ -14,15 +14,16 @@ class EventModel {
   final String eventThumbnail;
   final String location;
   final String completeLocation;
-  final List<PassType> stagFemaleEntry;
-  final List<PassType> stagMaleEntry;
-  final List<PassType> coupleEntry;
-  final List<PassType> tableOption;
+  final List<PassTypeModel> stagFemaleEntry;
+  final List<PassTypeModel> stagMaleEntry;
+  final List<PassTypeModel> coupleEntry;
+  final List<PassTypeModel> tableOption;
   final int totalMale;
   final int totalFemale;
   final int totalTable;
   final List? bookedPasses;
   final List? promoters;
+  final bool premium;
 
   final int remainingPasses;
 
@@ -47,37 +48,38 @@ class EventModel {
     required this.totalMale,
     required this.totalFemale,
     required this.totalTable,
+    required this.premium,
     this.promoters,
     this.bookedPasses,
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json, String id) {
-    final List<PassType> stagFemaleEntry = json['stagFemaleEntry'] != null
-        ? List<PassType>.from(
+    final List<PassTypeModel> stagFemaleEntry = json['stagFemaleEntry'] != null
+        ? List<PassTypeModel>.from(
             (json['stagFemaleEntry'] as List).map(
-              (model) => PassType.fromJson(model as Map<String, dynamic>),
+              (model) => PassTypeModel.fromJson(model as Map<String, dynamic>),
             ),
           )
         : [];
-    final List<PassType> stagMaleEntry = json['stagMaleEntry'] != null
-        ? List<PassType>.from(
+    final List<PassTypeModel> stagMaleEntry = json['stagMaleEntry'] != null
+        ? List<PassTypeModel>.from(
             (json['stagMaleEntry'] as List).map(
-              (model) => PassType.fromJson(model as Map<String, dynamic>),
+              (model) => PassTypeModel.fromJson(model as Map<String, dynamic>),
             ),
           )
         : [];
-    final List<PassType> coupleEntry = json['coupleEntry'] != null
-        ? List<PassType>.from(
+    final List<PassTypeModel> coupleEntry = json['coupleEntry'] != null
+        ? List<PassTypeModel>.from(
             (json['coupleEntry'] as List).map(
-              (model) => PassType.fromJson(model as Map<String, dynamic>),
+              (model) => PassTypeModel.fromJson(model as Map<String, dynamic>),
             ),
           )
         : [];
 
-    final List<PassType> tableOption = json['tableOption'] != null
-        ? List<PassType>.from(
+    final List<PassTypeModel> tableOption = json['tableOption'] != null
+        ? List<PassTypeModel>.from(
             (json['tableOption'] as List).map(
-              (model) => PassType.fromJson(model as Map<String, dynamic>),
+              (model) => PassTypeModel.fromJson(model as Map<String, dynamic>),
             ),
           )
         : [];
@@ -104,6 +106,7 @@ class EventModel {
       totalTable: json['totalTable'] as int,
       promoters: (json['promoters'] as List?) ?? [],
       completeLocation: json['completeLocation'] as String,
+      premium: json['premium'] as bool,
     );
   }
   Map<String, dynamic> toJson() {
@@ -136,6 +139,7 @@ class EventModel {
       "remainingPasses": remainingPasses,
       "promoters": promoters,
       "completeLocation": completeLocation,
+      "premium": premium
     };
   }
 }

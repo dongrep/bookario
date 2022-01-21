@@ -4,7 +4,6 @@ import 'package:bookario/app.locator.dart';
 import 'package:bookario/models/user_model.dart';
 import 'package:bookario/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 import 'local_storage_service.dart';
@@ -90,7 +89,6 @@ class AuthenticationService {
 
   Future refreshUser(String userId) async {
     _currentUser = await _firebaseService.getUserProfile(userId);
-    _localStorageService.setter("uid", _currentUser!.id!);
   }
 
   Future<void> resetPassword(String email) async {

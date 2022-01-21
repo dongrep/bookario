@@ -44,7 +44,7 @@ class ViewBookings extends StatelessWidget {
               ],
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SvgPicture.asset("assets/icons/arrow_right.svg",
                   height: 14, fit: BoxFit.cover, color: Colors.white70),
             ),

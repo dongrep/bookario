@@ -21,9 +21,11 @@ class HomeScreenViewModel extends BaseViewModel {
   Future getAllEvents(EventType eventType) async {
     try {
       setBusy(true);
+      this.eventType = eventType;
       allEvents.addAll(await _firebaseService.getEvents(eventType));
       hasEvents = allEvents.isNotEmpty;
       filteredEvents = allEvents;
+      getAllLocations();
       setBusy(false);
     } catch (e) {
       log(e.toString());
@@ -34,9 +36,7 @@ class HomeScreenViewModel extends BaseViewModel {
   Future<void> getAllLocations() async {
     try {
       allLocations = ["All", ...await _firebaseService.getAllLocations()];
-      setBusy(false);
     } catch (e) {
-      setBusy(false);
       log(e.toString());
     }
   }

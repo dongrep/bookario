@@ -40,7 +40,7 @@ class ConfirmBookingView extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey,
+                        color: Colors.grey[900],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -153,9 +153,8 @@ class ConfirmBookingView extends StatelessWidget {
                       )
                     else
                       SizedBox(
-                        width: SizeConfig.screenWidth,
                         child: MaterialButton(
-                          color: Colors.grey[600],
+                          color: Colors.grey[800],
                           onPressed: () {
                             promoterPopUp(context, viewModel);
                           },

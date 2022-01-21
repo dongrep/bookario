@@ -73,11 +73,16 @@ class FirebaseService {
   Future<List<EventModel>> getEvents(EventType eventType) async {
     try {
       final List<EventModel> _events = [];
+      final QuerySnapshot result;
 
-      final QuerySnapshot result = await _eventsCollectionReference
-          .where("premium", isEqualTo: eventType == EventType.premium)
-          // .where('dateTime', isLessThan: Timestamp.now())
-          .get();
+      if (eventType == EventType.premium) {
+        result = await _eventsCollectionReference
+            .where("premium", isEqualTo: eventType == EventType.premium)
+            // .where('dateTime', isLessThan: Timestamp.now())
+            .get();
+      } else {
+        result = await _eventsCollectionReference.get();
+      }
       for (final event in result.docs) {
         final data = EventModel.fromJson(
           event.data()! as Map<String, dynamic>,
@@ -89,7 +94,14 @@ class FirebaseService {
           _events.add(data);
         }
       }
-      return _events;
+      return _events
+        ..sort((EventModel a, EventModel b) {
+          if (a.premium == true) {
+            return -1;
+          } else {
+            return 1;
+          }
+        });
     } catch (e) {
       log(e.toString());
       return <EventModel>[];

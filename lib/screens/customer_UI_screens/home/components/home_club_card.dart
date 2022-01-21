@@ -1,13 +1,13 @@
-import 'dart:developer';
-
 import 'package:bookario/app.locator.dart';
 import 'package:bookario/app.router.dart';
 import 'package:bookario/components/constants.dart';
+import 'package:bookario/components/enum.dart';
 import 'package:bookario/models/event_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:stacked_services/stacked_services.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../components/size_config.dart';
 
@@ -15,9 +15,11 @@ class EventCard extends StatelessWidget {
   const EventCard({
     Key? key,
     required this.event,
+    required this.eventType,
   }) : super(key: key);
 
   final EventModel event;
+  final EventType eventType;
 
   Widget getTimeOfEvent(Timestamp dateTime) {
     final DateTime temp =
@@ -114,6 +116,31 @@ class EventCard extends StatelessWidget {
                   ),
                 ),
               ),
+              if (event.premium)
+                Positioned(
+                  left: 10,
+                  top: 10,
+                  child: Text(
+                    "★ ${eventType == EventType.home ? "Premium Event" : ""}",
+                    style: const TextStyle(
+                      color: kSecondaryColor,
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+              if (checkRatio(event))
+                const Positioned(
+                  right: 10,
+                  bottom: 10,
+                  child: Text(
+                    "Male Stag 🎟",
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                    ),
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
               Positioned(
                 right: 10,
                 top: 10,
@@ -121,7 +148,7 @@ class EventCard extends StatelessWidget {
                   children: [
                     Container(
                       width: 46,
-                      height: 46,
+                      height: 52,
                       padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -138,5 +165,18 @@ class EventCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool checkRatio(EventModel event) {
+    if (event.femaleRatio > 0 && event.maleRatio > 0) {
+      final double requiredRatio = event.femaleRatio / event.maleRatio;
+      final double currentRatio = (event.totalFemale) / (event.totalMale);
+      if (currentRatio >= requiredRatio) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 }

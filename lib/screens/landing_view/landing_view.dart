@@ -4,7 +4,6 @@ import 'package:bookario/components/constants.dart';
 import 'package:bookario/components/enum.dart';
 import 'package:bookario/components/size_config.dart';
 import 'package:bookario/screens/customer_UI_screens/home/home_screen.dart';
-import 'package:bookario/screens/customer_UI_screens/premium_clubs/premium_club_list.dart';
 import 'package:bookario/screens/customer_UI_screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 

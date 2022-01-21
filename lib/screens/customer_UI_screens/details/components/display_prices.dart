@@ -13,7 +13,7 @@ class ListofEntryPrices extends StatelessWidget {
   }) : super(key: key);
 
   final bool isTable;
-  final List<PassType> passes;
+  final List<PassTypeModel> passes;
   final String passName;
 
   @override
@@ -45,7 +45,7 @@ class ListofEntryPrices extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: passes.map<Widget>(
-            (PassType pass) {
+            (PassTypeModel pass) {
               return Card(
                 color: kSecondaryColor,
                 shape: RoundedRectangleBorder(

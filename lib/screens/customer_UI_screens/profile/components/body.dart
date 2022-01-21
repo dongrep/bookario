@@ -19,15 +19,18 @@ class Body extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          UserDetails(),
+          UserDetails(
+            viewModel: viewModel,
+          ),
           divider(),
           ViewBookings(user: viewModel.user),
           divider(),
           const ContactTile(),
           divider(),
           if (viewModel.user.promoterId == null) ...[
-            const BecomeAPromoterTile(),
-            divider(),
+            BecomeAPromoterTile(
+              viewModel: viewModel,
+            ),
           ] else
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -39,6 +42,7 @@ class Body extends StatelessWidget {
                       Icon(
                         Icons.person,
                         size: 16,
+                        color: kPrimaryColor,
                       ),
                       SizedBox(
                         width: 10,
