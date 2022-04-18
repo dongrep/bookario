@@ -1,3 +1,5 @@
+import 'package:bookario/constants/strings.dart';
+import 'package:bookario/screens/customer_UI_screens/profile/components/policy_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -10,19 +12,46 @@ class TermsAndConditions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        text: "By continuing your confirm that you agree \nwith our ",
-        style: Theme.of(context).textTheme.caption,
-        children: [
-          TextSpan(
-            text: "Term and Condition",
-            style: TextStyle(color: kSecondaryColor),
-            recognizer: TapGestureRecognizer()..onTap = () {},
-          )
-        ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PolicyPage(
+              policyDetails: tAndCPolicyDetails,
+              policyTitle: "Terms And Conditions",
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: RichText(
+          text: TextSpan(
+            text: "By continuing your confirm that you agree \nwith our ",
+            style: const TextStyle(color: Colors.white),
+            children: [
+              TextSpan(
+                text: "Term and Condition",
+                style: const TextStyle(color: kSecondaryColor),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PolicyPage(
+                              policyDetails: tAndCPolicyDetails,
+                              policyTitle: "Terms And Conditions",
+                            ),
+                          ),
+                        )
+                      },
+              )
+            ],
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
-      textAlign: TextAlign.center,
     );
   }
 }

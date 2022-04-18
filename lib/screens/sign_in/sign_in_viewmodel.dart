@@ -49,8 +49,8 @@ class SignInViewModel extends BaseViewModel {
   Future login() async {
     setBusy(true);
     final User? result = await _authenticationService.loginWithEmail(
-      email: email,
-      password: password,
+      email: email.trim(),
+      password: password.trim(),
     );
     if (result is User) {
       _navigationService.clearStackAndShow(Routes.landingView);
@@ -59,7 +59,9 @@ class SignInViewModel extends BaseViewModel {
   }
 
   Future forgotPassword() async {
-    _navigationService.navigateTo(Routes.forgotPasswordView,
-        arguments: ForgotPasswordViewArguments(email: email));
+    _navigationService.navigateTo(
+      Routes.forgotPasswordView,
+      arguments: ForgotPasswordViewArguments(email: email.trim()),
+    );
   }
 }
